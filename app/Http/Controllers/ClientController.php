@@ -15,7 +15,7 @@ class ClientController extends Controller
     public function index()
     {
 
-        $data = Client::all();
+        $data = Client::latest()->paginate(10);
         return view('client.index')->with('clients',$data);
     }
 
@@ -39,11 +39,34 @@ class ClientController extends Controller
     {
         $request->validate([
             'name'  => ['required','max:255','string'],
-            'username'  => ['required','max:255','string','unique:client|username'],
-            'email'  => ['required','max:255','string','email'],
+            'username'  => ['required','max:255','string','unique:clients'],
+            'email'  => ['required','max:255','string','email','unique:clients'],
             'phone'  => ['max:255','string'],
             'country'  => ['max:255','string'],
         ]);
+
+
+        Client::create($request->only('name','username','email','phone','country'));
+
+        // Client::create([
+        //     'name'  => $request->name,
+        //     'username'  => $request->username,
+        //     'email'  => $request->email,
+        //     'phone'  => $request->phone,
+        //     'country'  => $request->country,
+        // ]);
+
+
+        // $client = new Client();
+        // $client->name = $request->name;
+        // $client->username = $request->username;
+        // $client->email = $request->email;
+        // $client->phone = $request->phone;
+        // $client->country = $request->country;
+        // $client->save();
+
+        return redirect()->route('client.index');
+
 
     }
 
