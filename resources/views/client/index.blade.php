@@ -27,11 +27,20 @@
                         </thead>
                         <tbody>
 
+                            @php
+                                function getImageUrl($image){
+                                    if( str_starts_with($image, 'http') ){
+                                        return $image;
+                                    }
+                                    return asset('storage/uploads') . '/' . $image;
+                                }
+                            @endphp
+
                             @foreach ($clients as $client)
 
                             <tr>
                                 <td class="border py-2 w-32 text-center">
-                                    <img src="{{ $client->thumbnail }}" width="50" alt="" class="mx-auto rounded-full">
+                                    <img src="{{ getImageUrl($client->thumbnail) }}" width="50" alt="" class="mx-auto rounded-full">
                                 </td>
                                 <td class="border py-2 text-center">{{ $client->name }}</td>
                                 <td class="border py-2 text-center">{{ $client->username }}</td>
