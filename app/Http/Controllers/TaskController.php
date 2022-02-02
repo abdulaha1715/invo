@@ -88,7 +88,7 @@ class TaskController extends Controller
     {
         return $request->validate([
             'name'      => ['required','max:255','string'],
-            'price'     => ['required','max:255','integer'],
+            'price'     => ['required','integer'],
             'client_id' => ['required','max:255','not_in:none'],
             'description' => ['required'],
         ]);
@@ -125,6 +125,7 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        //
+        $task->delete();
+        return redirect()->route('task.index')->with('success','Task Deleted');
     }
 }
