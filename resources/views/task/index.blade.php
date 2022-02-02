@@ -44,6 +44,9 @@
                                         <a href="{{ route('task.edit', $task->id) }}"
                                             class="bg-emerald-800 text-white px-3 py-1 mr-2">Edit</a>
 
+                                        <a href="{{ route('task.show', $task->id) }}"
+                                            class="bg-blue-800 text-white px-3 py-1 mr-2">View</a>
+
                                         <form action="{{ route('task.destroy', $task->id) }}" method="POST"
                                             onsubmit="return confirm('Do you really want to delete?');">
                                             @csrf

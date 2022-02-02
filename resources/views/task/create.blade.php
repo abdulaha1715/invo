@@ -26,7 +26,7 @@
 
                         <div class="mt-6 flex">
 
-                            <div class="flex-1 mr-4">
+                            <div class="flex-1">
                                 <label for="name" class="formLabel">Name</label>
                                 <input type="text" name="name" id="name" class="formInput" value="{{ old('name') }}">
 
@@ -87,8 +87,30 @@
 
                     </form>
 
+
+
                 </div>
             </div>
         </div>
     </div>
+
+
+    @section('scripts')
+    <script>
+        $('#description').summernote({
+          tabsize: 2,
+          height: 320,
+          toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+          ]
+        });
+      </script>
+    @endsection
+
 </x-app-layout>
