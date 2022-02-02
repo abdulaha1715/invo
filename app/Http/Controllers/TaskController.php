@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Client;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -14,7 +16,11 @@ class TaskController extends Controller
      */
     public function index()
     {
-        //
+        $tasks = Task::orderBy('id','DESC')->paginate(10);
+
+        return view('task.index')->with([
+            'tasks' => $tasks,
+        ]);
     }
 
     /**
@@ -24,7 +30,9 @@ class TaskController extends Controller
      */
     public function create()
     {
-        //
+        return view('task.create')->with([
+            'clients' => Client::all(),
+        ]);
     }
 
     /**
@@ -35,7 +43,18 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->taskValidation($request);
+
+        Task::create([
+            'name'  => $request->name,
+            'price'  => $request->price,
+            'description'  => $request->description,
+            'client_id'  => $request->client_id,
+            'user_id'  => Auth::user()->id,
+        ]);
+
+        return redirect()->route('task.index')->with('success','Task Created');
+
     }
 
     /**
@@ -57,7 +76,23 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        //
+       return view('task.edit')->with([
+        'task' => $task,
+        'clients' => Client::all(),
+       ]);
+    }
+
+
+
+    public function taskValidation(Request $request)
+    {
+        return $request->validate([
+            'name'      => ['required','max:255','string'],
+            'price'     => ['required','max:255','integer'],
+            'client_id' => ['required','max:255','not_in:none'],
+            'description' => ['required'],
+        ]);
+
     }
 
     /**
@@ -69,7 +104,17 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        //
+        $this->taskValidation($request);
+
+        $task->update([
+            'name'  => $request->name,
+            'price'  => $request->price,
+            'description'  => $request->description,
+            'client_id'  => $request->client_id,
+            'user_id'  => Auth::user()->id,
+        ]);
+
+        return redirect()->route('task.index')->with('success','Task Updated');
     }
 
     /**

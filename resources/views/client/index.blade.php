@@ -8,6 +8,9 @@
        </div>
     </x-slot>
 
+   @include('layouts.messages')
+
+
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -40,7 +43,7 @@
 
                             <tr>
                                 <td class="border py-2 w-32 text-center">
-                                    <img src="{{ getImageUrl($client->thumbnail) }}" width="50" alt="" class="mx-auto rounded-full">
+                                    <img src="{{ getImageUrl($client->thumbnail) }}" width="50" alt="" class="mx-auto">
                                 </td>
                                 <td class="border py-2 text-center">{{ $client->name }}</td>
                                 <td class="border py-2 text-center">{{ $client->username }}</td>
@@ -48,8 +51,18 @@
                                 <td class="border py-2 text-center">{{ $client->phone }}</td>
                                 <td class="border py-2 text-center">{{ $client->country }}</td>
                                 <td class="border py-2 text-center">
-                                    <a href="#" class="bg-emerald-800 text-white px-3 py-1">Edit</a>
-                                    <a href="#" class="bg-red-800 text-white px-3 py-1">Delete</a>
+                                   <div class="flex justify-center">
+                                    <a href="{{ route('client.edit', $client->id) }}" class="bg-emerald-800 text-white px-3 py-1 mr-2">Edit</a>
+
+                                    <form action="{{ route('client.destroy', $client->id) }}" method="POST" onsubmit="return confirm('Do you really want to delete?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="bg-red-800 text-white px-3 py-1">Delete</button>
+                                    </form>
+                                   </div>
+
+
+
                                 </td>
                             </tr>
 
