@@ -52,7 +52,7 @@
                                 <td class="border py-2 text-center">{{ $client->phone }}</td>
                                 <td class="border py-2 text-center">{{ $client->country }}</td>
                                 <td class="border py-2 text-center">
-                                    <div class=" mx-auto bg-orange-500 text-white rounded-full w-8 h-8 leading-8 text-center">{{ count($client->tasks) }}</div>
+                                    <div class=" mx-auto bg-orange-500 text-white rounded-full w-8 h-8 leading-8 text-center"><a href="{{ route('searchTaskByClient',$client) }}">{{ count($client->tasks) }}</a></div>
                                 </td>
                                 <td class="border py-2 text-center">
                                    <div class="flex justify-center">

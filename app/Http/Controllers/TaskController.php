@@ -63,8 +63,9 @@ class TaskController extends Controller
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
-    public function show(Task $task)
+    public function show($slug)
     {
+        $task = Task::where('slug',$slug)->get()->first();
         return view('task.show')->with('task',$task);
     }
 
