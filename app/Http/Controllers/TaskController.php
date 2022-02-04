@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class TaskController extends Controller
 {
@@ -47,6 +48,7 @@ class TaskController extends Controller
 
         Task::create([
             'name'  => $request->name,
+            'slug'  => Str::slug($request->name),
             'price'  => $request->price,
             'description'  => $request->description,
             'client_id'  => $request->client_id,
@@ -109,6 +111,7 @@ class TaskController extends Controller
 
         $task->update([
             'name'  => $request->name,
+            'slug'  => Str::slug($request->name),
             'price'  => $request->price,
             'description'  => $request->description,
             'client_id'  => $request->client_id,
@@ -128,5 +131,16 @@ class TaskController extends Controller
     {
         $task->delete();
         return redirect()->route('task.index')->with('success','Task Deleted');
+    }
+
+
+    public function markAsCcomplete(Task $task)
+    {
+
+        $task->update([
+            'status' => 'complete'
+        ]);
+
+        return redirect()->back()->with('success','Mark as Completed');
     }
 }

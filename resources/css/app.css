@@ -9,3 +9,6 @@
 .formInput{
     @apply w-full rounded-sm
 }
+.ck-editor__editable_inline {
+    min-height: 300px;
+}
