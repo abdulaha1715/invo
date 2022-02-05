@@ -17,7 +17,7 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::orderBy('id','DESC')->paginate(10);
+        $tasks = Task::where('user_id', Auth::user()->id)->orderBy('id','DESC')->paginate(10);
 
         return view('task.index')->with([
             'tasks' => $tasks,
@@ -81,7 +81,7 @@ class TaskController extends Controller
     {
        return view('task.edit')->with([
         'task' => $task,
-        'clients' => Client::all(),
+        'clients' => Client::where('user_id',Auth::user()->id)->get(),
        ]);
     }
 
