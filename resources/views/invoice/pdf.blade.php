@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <style>
         html {
@@ -151,6 +152,19 @@
             bottom: 0px;
             font-size: 8px
         }
+
+        .single_head_title {
+            margin-bottom: 3px
+        }
+
+        .single_head_title span {
+            width: 15%;
+            display: inline-block;
+        }
+
+        .single_head_title strong span {
+            width: 3%;
+        }
     </style>
 </head>
 
@@ -160,21 +174,23 @@
         <div class="header">
             <div class="header_content">
                 <h2 class="header_title">INVOICE</h2>
-                <div>
+                <div class="single_head_title">
                     <span class="w-1/3">INVOICE NO</span>
                     <strong class="w-3/5"><span class="mx-5">:</span> {{ $invoice_id }}</strong>
                 </div>
-                <div>
+                <div class="single_head_title">
                     <span class="w-1/3">INVOICE DATE</span>
-                    <strong class="w-3/5"><span class="mx-5">:</span> {{ Carbon\Carbon::now()->format('d-M-Y') }}</strong>
+                    <strong class="w-3/5"><span class="mx-5">:</span> {{ Carbon\Carbon::now()->format('d-M-Y')
+                        }}</strong>
                 </div>
-                <div>
+                <div class="single_head_title">
                     <span class="w-1/3">INVOICE DUE</span>
-                    <strong class="w-3/5"><span class="mx-5">:</span> {{ Carbon\Carbon::now()->addDays(5)->format('d-M-Y') }}</strong>
+                    <strong class="w-3/5"><span class="mx-5">:</span> {{
+                        Carbon\Carbon::now()->addDays(5)->format('d-M-Y') }}</strong>
                 </div>
             </div>
             <div class="header_logo">
-                <img src="img/logo.png" class="w-40" alt="">
+                <img src="{{ asset('img/logo.png') }}" class="w-40" style="margin-left:auto">
             </div>
         </div>
         <div class="invoice_from_to">
@@ -188,9 +204,9 @@
             <div class="invoice_from">
                 <h2>FROM</h2>
                 <p><strong class="">{{ $user->name }}</strong></p>
+                <p><small class="">{{ $user->company }}</small></p>
                 <p><small class="">{{ $user->email }}</small></p>
-                <p><small class="">admin@pixcafe.com</small></p>
-                <p><small class="">Bangladesh</small></p>
+                <p><small class="">{{ $user->country }}</small></p>
             </div>
         </div>
         <div class="invoice_list">
