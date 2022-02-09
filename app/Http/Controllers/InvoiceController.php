@@ -55,34 +55,18 @@ class InvoiceController extends Controller
             'status' => ['required','not_in:none'],
         ]);
 
-        $tasks = Task::latest();
 
-        if( !empty($request->client_id) ){
-            $tasks = $tasks->where('client_id', '=', $request->client_id);
-        }
-
-        if( !empty($request->status) ){
-            $tasks = $tasks->where('status', '=', $request->status);
-        }
-
-        if( !empty($request->fromDate) ){
-            $tasks = $tasks->whereDate('created_at', '>=', $request->fromDate);
-        }
-        if( !empty($request->endDate) ){
-            $tasks = $tasks->whereDate('created_at', '<=', $request->endDate);
-        }
 
         return view('invoice.create')->with([
             'clients' => Client::where('user_id',Auth::user()->id)->get(),
-            'tasks' => $tasks->get(),
-
+            'tasks' => $this->getInvoiceData($request),
         ]);
 
 
     }
 
 
-    public function getTasksForPreview(Request $request)
+    public function getInvoiceData(Request $request)
     {
         $tasks = Task::latest();
 
@@ -102,18 +86,17 @@ class InvoiceController extends Controller
         }
 
         return $tasks->get();
+
     }
 
 
     // Preview
     public function preview(Request $request)
     {
-
-
         return view('invoice.preview')->with([
-            'invoice_id' => 'INVO_'.rand(234252,1351535),
-            'user' => Auth::user(),
-            'tasks' => $this->getTasksForPreview($request)
+            'invocie_no'  => 'INVO_'.rand(23435252,235235326532),
+            'user'  => Auth::user(),
+            'tasks' => $this->getInvoiceData($request),
         ]);
     }
 

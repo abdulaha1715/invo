@@ -176,17 +176,15 @@
                 <h2 class="header_title">INVOICE</h2>
                 <div class="single_head_title">
                     <span class="w-1/3">INVOICE NO</span>
-                    <strong class="w-3/5"><span class="mx-5">:</span> {{ $invoice_id }}</strong>
+                    <strong class="w-3/5"><span class="mx-5">:</span> {{ $invocie_no }}</strong>
                 </div>
                 <div class="single_head_title">
                     <span class="w-1/3">INVOICE DATE</span>
-                    <strong class="w-3/5"><span class="mx-5">:</span> {{ Carbon\Carbon::now()->format('d-M-Y')
-                        }}</strong>
+                    <strong class="w-3/5"><span class="mx-5">:</span> {{ Carbon\Carbon::now()->format('d M, Y') }}</strong>
                 </div>
                 <div class="single_head_title">
                     <span class="w-1/3">INVOICE DUE</span>
-                    <strong class="w-3/5"><span class="mx-5">:</span> {{
-                        Carbon\Carbon::now()->addDays(5)->format('d-M-Y') }}</strong>
+                    <strong class="w-3/5"><span class="mx-5">:</span> {{ Carbon\Carbon::now()->addDays(5)->format('d M, Y') }}</strong>
                 </div>
             </div>
             <div class="header_logo">
@@ -197,15 +195,18 @@
             <div class="invoice_to">
                 <h2>INVOICE TO</h2>
                 <p><strong class="">{{ $tasks->first()->client->name }}</strong></p>
+                <p><small class="">{{ $tasks->first()->client->username }}</small></p>
                 <p><small class="">{{ $tasks->first()->client->email }}</small></p>
                 <p><small class="">{{ $tasks->first()->client->phone }}</small></p>
                 <p><small class="">{{ $tasks->first()->client->country }}</small></p>
+
             </div>
             <div class="invoice_from">
                 <h2>FROM</h2>
                 <p><strong class="">{{ $user->name }}</strong></p>
                 <p><small class="">{{ $user->company }}</small></p>
                 <p><small class="">{{ $user->email }}</small></p>
+                <p><small class="">{{ $user->phone }}</small></p>
                 <p><small class="">{{ $user->country }}</small></p>
             </div>
         </div>
@@ -224,9 +225,10 @@
                     <tr>
                         <td>{{ $task->name }}</td>
                         <td style="text-align:center">0</td>
-                        <td style="text-align:right">{{ number_format($task->price) }}</td>
+                        <td style="text-align:right">{{ $task->price }}</td>
                     </tr>
                     @endforeach
+
 
                 </tbody>
             </table>

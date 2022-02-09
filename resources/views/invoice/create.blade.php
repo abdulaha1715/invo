@@ -77,7 +77,7 @@
                             <tr>
                                 <th class="border py-2">Name</th>
                                 <th class="border py-2">Status</th>
-                                <th class="border py-2">Client</th>
+                                <th class="border py-2">Price</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -87,7 +87,7 @@
                             <tr>
                                 <td class="border py-2 text-center px-2">{{ $task->name }}</td>
                                 <td class="border py-2 text-center">{{ $task->status }}</td>
-                                <td class="border py-2 text-center">{{ $task->client->name }}</td>
+                                <td class="border py-2 text-center">{{ $task->price }}</td>
                             </tr>
                             @endforeach
 
@@ -98,7 +98,7 @@
 
 
                 <div class="flex justify-center mt-5">
-                    <a href="{{ route('preview.invoice' ) }}{{ '?client_id=' . request('client_id') . '&status=' . request('status') . '&fromDate=' .request('fromDate') . '&endDate=' . request('endDate') }}" class="bg-purple-400 text-white px-3 py-2">Preview</a>
+                    <a href="{{ route('preview.invoice' ) }}{{ '?client_id=' .request('client_id') . '&status=' . request('status') . '&fromDate=' . request('fromDate') . '&endDate=' .request('endDate') }}" class="bg-purple-400 text-white px-3 py-2">Preview</a>
                 </div>
 
                     @endif

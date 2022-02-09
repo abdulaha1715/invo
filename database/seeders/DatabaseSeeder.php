@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
-        Client::factory(50)->create();
+        Client::factory(10)->create();
 
         Task::factory(150)->create();
 
