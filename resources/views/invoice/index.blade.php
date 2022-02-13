@@ -16,15 +16,14 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
 
-
-
                     <table class="w-full border-collapse">
                         <thead>
                             <tr>
                                 <th class="border py-2">#</th>
                                 <th class="border py-2">Client</th>
                                 <th class="border py-2">Status</th>
-                                <th class="border py-2">Download</th>
+                                <th class="border py-2">Email Sent</th>
+                                <th class="border py-2">Preview</th>
                                 <th class="border py-2">Action</th>
                             </tr>
                         </thead>
@@ -32,25 +31,38 @@
 
 
 
-                            @foreach ($invoices as $invoice)
+                            @forelse ($invoices as $invoice)
 
                             <tr>
                                 <td class="border py-2 text-center px-2">{{ $invoice->invoice_id }}</td>
                                 <td class="border py-2 text-left px-2">{{ $invoice->client->name }}</td>
-                                <td class="border py-2 text-center">{{ $invoice->status }}</td>
+                                <td class="border py-2 text-center capitalize">{{ $invoice->status }}</td>
+                                <td class="border py-2 text-center capitalize">{{ $invoice->email_sent }}</td>
                                 <td class="border py-2 text-center">
-                                    <a href="{{ $invoice->download_url }}" class="bg-purple-800 text-white px-3 py-1 mr-2">Download PDF</a>
+                                    <a target="_blank" href="{{ asset('storage/invoices/' .$invoice->download_url )  }}" class="bg-teal-600 text-white px-3 py-1 mr-2">View</a>
                                 </td>
                                 <td class="border py-2 text-center">
-                                    <div class="flex justify-center">
-                                        <a href="{{ route('invoice.edit', $invoice->id) }}"
-                                            class="bg-emerald-800 text-white px-3 py-1 mr-2">Edit</a>
+                                    <div class="flex justify-center space-x-3">
+
+                                        <a href="{{ route('invoice.sendEmail', $invoice) }}" class="border-2 bg-teal-600 text-white hover:bg-transparent hover:text-black transition-all duration-300 px-3 py-1 mr-2">Send Email</a>
+
+                                        @if ($invoice->status == 'unpaid')
+
+                                        <form action="{{ route('invoice.update', $invoice->id) }}" method="POST"
+                                            onsubmit="return confirm('Did you get paid?');">
+                                            @csrf
+                                            @method('PUT')
+                                            <button type="submit"
+                                                class="border-2 bg-purple-500 text-white hover:bg-transparent hover:text-black transition-all duration-300 px-3 py-1 mr-2">Paid</button>
+                                        </form>
+                                        @endif
+
                                         <form action="{{ route('invoice.destroy', $invoice->id) }}" method="POST"
                                             onsubmit="return confirm('Do you really want to delete?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                class="bg-red-800 text-white px-3 py-1">Delete</button>
+                                                class="border-2 bg-red-500 text-white hover:bg-transparent hover:text-black transition-all duration-300 px-3 py-1 mr-2">Delete</button>
                                         </form>
                                     </div>
 
@@ -59,13 +71,16 @@
                                 </td>
                             </tr>
 
+                            @empty
+                            <tr>
+                                <td class="border py-2 text-center" colspan="5">No Invoice Found</td>
+                            </tr>
 
-                            @endforeach
+                            @endforelse
 
 
                         </tbody>
                     </table>
-
                     <div class="mt-5">
                         {{ $invoices->links() }}
                     </div>

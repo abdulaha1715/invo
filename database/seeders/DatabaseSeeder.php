@@ -41,7 +41,7 @@ class DatabaseSeeder extends Seeder
 
         Task::factory(150)->create();
 
-        Invoice::factory(20)->create();
+        // Invoice::factory(20)->create();
 
     }
 }

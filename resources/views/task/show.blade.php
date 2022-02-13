@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('View Tasks') }}
             </h2>
-            <a href="{{ route('task.create') }}" class="border border-emerald-400 px-3 py-1">Add New</a>
+            <a href="{{ route('task.index') }}" class="border border-emerald-400 px-3 py-1">Back</a>
         </div>
     </x-slot>
 

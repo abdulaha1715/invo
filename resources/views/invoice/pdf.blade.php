@@ -158,12 +158,12 @@
         }
 
         .single_head_title span {
-            width: 15%;
+            width: 100px;
             display: inline-block;
         }
 
         .single_head_title strong span {
-            width: 3%;
+            width: 20px;
         }
     </style>
 </head>
@@ -176,19 +176,29 @@
                 <h2 class="header_title">INVOICE</h2>
                 <div class="single_head_title">
                     <span class="w-1/3">INVOICE NO</span>
-                    <strong class="w-3/5"><span class="mx-5">:</span> {{ $invocie_no }}</strong>
+                    <strong class="w-3/5"><span class="mx-5">:</span> {{ $invoice_no }}</strong>
                 </div>
                 <div class="single_head_title">
                     <span class="w-1/3">INVOICE DATE</span>
-                    <strong class="w-3/5"><span class="mx-5">:</span> {{ Carbon\Carbon::now()->format('d M, Y') }}</strong>
+                    <strong class="w-3/5"><span class="mx-5">:</span> {{ Carbon\Carbon::now()->format('d M, Y')
+                        }}</strong>
                 </div>
                 <div class="single_head_title">
                     <span class="w-1/3">INVOICE DUE</span>
-                    <strong class="w-3/5"><span class="mx-5">:</span> {{ Carbon\Carbon::now()->addDays(5)->format('d M, Y') }}</strong>
+                    <strong class="w-3/5"><span class="mx-5">:</span> {{ Carbon\Carbon::now()->addDays(5)->format('d M,
+                        Y') }}</strong>
                 </div>
             </div>
             <div class="header_logo">
+
+                @if (request()->routeIs('preview.invoice'))
+
                 <img src="{{ asset('img/logo.png') }}" class="w-40" style="margin-left:auto">
+                @else
+                <img src="img/logo.png" class="w-40" width="80" style="margin-left:auto">
+                @endif
+
+
             </div>
         </div>
         <div class="invoice_from_to">

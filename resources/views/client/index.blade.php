@@ -1,14 +1,14 @@
 <x-app-layout>
     <x-slot name="header">
-       <div class="flex justify-between">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Clients') }}
-        </h2>
-        <a href="{{ route('client.create') }}" class="border border-emerald-400 px-3 py-1">Add New</a>
-       </div>
+        <div class="flex justify-between">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('Clients') }}
+            </h2>
+            <a href="{{ route('client.create') }}" class="border border-emerald-400 px-3 py-1">Add New</a>
+        </div>
     </x-slot>
 
-   @include('layouts.messages')
+    @include('layouts.messages')
 
 
     <div class="py-12">
@@ -21,23 +21,20 @@
                             <tr>
                                 <th class="border py-2 w-32 text-center">Image</th>
                                 <th class="border py-2">Name</th>
-                                <th class="border py-2">Username</th>
-                                <th class="border py-2">Email</th>
-                                <th class="border py-2">Phone</th>
                                 <th class="border py-2">Country</th>
-                                <th class="border py-2">Task Count</th>
-                                <th class="border py-2">Action</th>
+                                <th class="border py-2">Total Task</th>
+                                <th class="border py-2 min-w-max">Action</th>
                             </tr>
                         </thead>
                         <tbody>
 
                             @php
-                                function getImageUrl($image){
-                                    if( str_starts_with($image, 'http') ){
-                                        return $image;
-                                    }
-                                    return asset('storage/uploads') . '/' . $image;
-                                }
+                            function getImageUrl($image){
+                            if( str_starts_with($image, 'http') ){
+                            return $image;
+                            }
+                            return asset('storage/uploads') . '/' . $image;
+                            }
                             @endphp
 
                             @foreach ($clients as $client)
@@ -46,24 +43,35 @@
                                 <td class="border py-2 w-32 text-center">
                                     <img src="{{ getImageUrl($client->thumbnail) }}" width="50" alt="" class="mx-auto">
                                 </td>
-                                <td class="border py-2 text-center">{{ $client->name }}</td>
-                                <td class="border py-2 text-center">{{ $client->username }}</td>
-                                <td class="border py-2 text-center">{{ $client->email }}</td>
-                                <td class="border py-2 text-center">{{ $client->phone }}</td>
+                                <td class="border py-2 text-left px-3">
+                                    <div class="flex flex-col ">
+                                        <a class="hover:text-purple-600 font-semibold" href="{{ route('client.show', $client) }}">{{
+                                            $client->name }}</a>
+                                        <span class="text-xs">{{ $client->username }}</span>
+                                        <span class="text-xs">{{ $client->email }}</span>
+                                    </div>
+                                </td>
                                 <td class="border py-2 text-center">{{ $client->country }}</td>
                                 <td class="border py-2 text-center">
-                                    <div class=" mx-auto bg-orange-500 text-white rounded-full w-8 h-8 leading-8 text-center"><a href="{{ route('searchTaskByClient',$client) }}">{{ count($client->tasks) }}</a></div>
+                                    <div
+                                        class="">
+                                        <a href="{{ route('searchTaskByClient',$client) }}" class="relative px-3 py-1 bg-teal-600 group inline-block uppercase text-white text-sm ">
+                                        <span class="absolute group-hover:bg-orange-500 group-hover:text-white group-hover:border-white transition-all from-neutral-300 bg-white text-black border border-black -right-4 -top-4 rounded-full w-7 h-7 leading-7 text-center text-xs">{{ count($client->tasks) }}</span>View</a>
+                                    </div>
                                 </td>
-                                <td class="border py-2 text-center">
-                                   <div class="flex justify-center">
-                                    <a href="{{ route('client.edit', $client->id) }}" class="bg-emerald-800 text-white px-3 py-1 mr-2">Edit</a>
+                                <td class="border py-2 text-center min-w-max">
+                                    <div class="flex justify-center">
+                                        <a href="{{ route('client.edit', $client) }}"
+                                            class="border-2 bg-purple-500 text-white hover:bg-transparent hover:text-black transition-all duration-300 px-3 py-1 mr-2">Edit</a>
 
-                                    <form action="{{ route('client.destroy', $client->id) }}" method="POST" onsubmit="return confirm('Do you really want to delete?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="bg-red-800 text-white px-3 py-1">Delete</button>
-                                    </form>
-                                   </div>
+                                        <form action="{{ route('client.destroy', $client) }}" method="POST"
+                                            onsubmit="return confirm('Do you really want to delete?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="border-2 bg-red-500 text-white hover:bg-transparent hover:text-black transition-all duration-300 px-3 py-1 mr-2">Delete</button>
+                                        </form>
+                                    </div>
 
 
 

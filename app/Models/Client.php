@@ -18,5 +18,8 @@ class Client extends Model
         return $this->hasMany(Task::class,'client_id','id');
     }
 
-
+//    public function getRouteKeyName()
+//     {
+//         return 'username';
+//     }
 }

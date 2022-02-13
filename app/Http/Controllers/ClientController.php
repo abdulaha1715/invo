@@ -16,12 +16,14 @@ class ClientController extends Controller
      */
     public function index()
     {
-
         $data = Client::where('user_id',Auth::user()->id)->with('tasks')->latest()->paginate(10);
         return view('client.index')->with('clients',$data);
     }
 
 
+    /**
+     * Search Task By Client
+     */
     public function searchTaskByClient(Client $client)
     {
         return view('task.searchbyclient')->with([
@@ -89,7 +91,7 @@ class ClientController extends Controller
      */
     public function show(Client $client)
     {
-        //
+        return view('client.profile')->with('client',$client);
     }
 
     /**
@@ -164,6 +166,8 @@ class ClientController extends Controller
         $client->delete();
         return redirect()->route('client.index')->with('success','Client Deleted!');
     }
+
+
 
 
 
