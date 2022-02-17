@@ -12,7 +12,6 @@ jQuery(document).ready(function($){
         $('#status_message').slideUp('slow');
     }, 2000);
 
-
     // Task Filter Box
     $('#task_filter_btn').on('click', function(){
         var text = $(this).text();

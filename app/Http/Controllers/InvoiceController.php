@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\InvoiceEmail;
 use App\Models\Client;
 use App\Models\Invoice;
 use App\Models\Task;
@@ -10,15 +11,16 @@ use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use App\jobs\InoviceEmailJob;
 
 class InvoiceController extends Controller
 {
 
     /**
-     * Function Index
-     * Display invoices
+     * Method index
+     *
+     * @return all invoices
      */
-
     public function index()
     {
         return view('invoice.index')->with([
@@ -27,11 +29,11 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Funcation Create
-     * @param request
-     * Method Get
-     * Search query
+     * Method create
      *
+     * @param Request $request
+     *
+     * @return collections of tasks and clients
      */
     public function create(Request $request)
     {
@@ -56,9 +58,12 @@ class InvoiceController extends Controller
 
 
     /**
-     * Function Update
-     * @param Request, Invoice
-     * Update invoice status to paid
+     * Method update
+     *Update invoice status to paid
+     * @param Request $request
+     * @param Invoice $invoice [explicite description]
+     *
+     * @return void
      */
     public function update(Request $request,Invoice $invoice)
     {
@@ -68,9 +73,13 @@ class InvoiceController extends Controller
         return redirect()->route('invoice.index')->with('success', 'Invoice Payment marked as paid!');
     }
 
+
     /**
-     * Function Destroy
-     * Delete invoice info
+     * Method destroy
+     *
+     * @param Invoice $invoice
+     *
+     * @return void
      */
     public function destroy(Invoice $invoice)
     {
@@ -80,9 +89,13 @@ class InvoiceController extends Controller
     }
 
 
+
     /**
-     * Function Get Invoice Data
-     * return tasks
+     * Method getInvoiceData
+     *
+     * @param Request $request
+     *
+     * @return void
      */
     public function getInvoiceData(Request $request)
     {
@@ -108,13 +121,16 @@ class InvoiceController extends Controller
     }
 
 
+
     /**
-     * Function Preview
-     * preview invoice
+     * Method preview
+     *
+     * @param Request $request
+     *
+     * @return void
      */
     public function preview(Request $request)
     {
-
         return view('invoice.preview')->with([
             'invoice_no'  => 'INVO_'.rand(23435252,235235326532),
             'user'  => Auth::user(),
@@ -123,10 +139,11 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Function Generate
-     * PDF generation
-     * Invoice Insert
+     * Method generate
      *
+     * @param Request $request
+     *
+     * @return void
      */
     public function generate(Request $request)
     {
@@ -152,30 +169,30 @@ class InvoiceController extends Controller
             'download_url'  => $invo_no.'.pdf'
         ]);
 
-
         return redirect()->route('invoice.index')->with('success', 'Invocie Created');
     }
 
+    /**
+     * Method sendEmail
+     *
+     * @param Invoice $invoice
+     *
+     * @return void
+     */
     public function sendEmail(Invoice $invoice)
     {
-
-        $pdf = Storage::get('public/invoices/'.$invoice->download_url);
-
-
         $data = [
-            'user'   => Auth::user(),
-            'invoice_id'   => $invoice->invoice_id,
-            'client'   => $invoice->client
+            'user'          => Auth::user(),
+            'invoice_id'    => $invoice->invoice_id,
+            'invoice'       => $invoice,
         ];
 
-        Mail::send('emails.invoice', $data, function ($message) use($invoice,$pdf) {
-            $message->from(Auth::user()->email, Auth::user()->name);
-            $message->to($invoice->client->email, $invoice->client->name);
-            $message->subject('Pixcafe - '. $invoice->invoice_id);
-            $message->attachData($pdf, $invoice->download_url, [
-                'mime'  => 'application/pdf'
-            ]);
-        });
+        // InoviceEmailJob::dispatch($data);
+        dispatch(new InoviceEmailJob($data));
+
+        $invoice->update([
+            'email_sent'    => 'yes'
+        ]);
 
         return redirect()->route('invoice.index')->with('success','Email sent');
     }

@@ -1,13 +1,15 @@
 <?php
 
+use App\Http\Controllers\api\NewController;
+use App\Http\Controllers\api\testController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\TaskController;
+use App\Mail\InvoiceEmail;
 use Illuminate\Support\Facades\Route;
 
 
 // Backend
-
 Route::prefix('/')->middleware(['auth'])->group(function () {
 
     Route::get('dashboard', function () {
@@ -35,10 +37,7 @@ Route::prefix('/')->middleware(['auth'])->group(function () {
         Route::get('generate', [InvoiceController::class, 'generate'])->name('invoice.generate');
         Route::get('email/send/{invoice:invoice_id}', [InvoiceController::class, 'sendEmail'])->name('invoice.sendEmail');
     });
-
 });
 
-
-
-
+// Auth Routes
 require __DIR__ . '/auth.php';
