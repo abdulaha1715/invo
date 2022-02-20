@@ -14,7 +14,6 @@
                 <div class="p-6 bg-white border-b border-gray-200">
 
                     <form action="{{ route('invoice.create') }}" method="GET">
-                        @csrf
 
                         <div class="flex space-x-3 items-end justify-center">
                             <div class="">
@@ -81,19 +80,21 @@
                     @if ($tasks)
 
                     <div class="mt-10">
-                        <table class="w-full border-collapse">
-                            <thead>
-                                <tr>
-                                    <th class="border py-2">Select</th>
-                                    <th class="border py-2">Name</th>
-                                    <th class="border py-2">Status</th>
-                                    <th class="border py-2">Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
 
-                                <form action="{{ route('inovice') }}" method="GET" id="tasksInvoiceFrom">
-                                    @csrf
+                        <form action="{{ route('inovice') }}" method="GET" id="tasksInvoiceFrom">
+                            @csrf
+                            <table class="w-full border-collapse">
+                                <thead>
+                                    <tr>
+                                        <th class="border py-2">Select</th>
+                                        <th class="border py-2">Name</th>
+                                        <th class="border py-2">Status</th>
+                                        <th class="border py-2">Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+
                                     @foreach ($tasks as $task)
                                     <tr>
                                         <td class="border py-2 text-center px-3">
@@ -105,20 +106,44 @@
                                     </tr>
                                     @endforeach
 
-                                </form>
-                            </tbody>
-                        </table>
+
+
+
+
+                                </tbody>
+                            </table>
+
+                            <div class="mt-6 flex justify-between ">
+                                <div class="flex space-x-3">
+                                    <div class="">
+                                        <label for="discount">Discount </label>
+                                        <input type="number" name="discount" id="discount" placeholder="Tyoe discount">
+                                    </div>
+                                    <div class="">
+                                        {{-- <label for="discount_type">Discount Type: </label> --}}
+                                        <select name="discount_type" id="discount_type">
+                                            <option value="%">%</option>
+                                            <option value="$">$</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="space-x-4">
+
+                                    <button type="submit" name="preview" value="yes" form="tasksInvoiceFrom"
+                                        class="bg-teal-600 text-white px-3 py-2">Preview</button>
+
+                                    <button type="submit" name="generate" value="yes" form="tasksInvoiceFrom"
+                                        class="bg-pink-600 text-white px-3 py-2">Generate</button>
+                                </div>
+
+
+                            </div>
+                        </form>
+
                     </div>
 
 
-                    <div class="flex justify-center mt-5 space-x-6">
-
-                        <button type="submit" name="preview" value="yes" form="tasksInvoiceFrom"
-                            class="bg-teal-600 text-white px-3 py-2">Preview</button>
-
-                        <button type="submit" name="generate" value="yes" form="tasksInvoiceFrom"
-                            class="bg-pink-600 text-white px-3 py-2">Generate</button>
-                    </div>
 
                     @endif
 

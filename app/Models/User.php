@@ -42,4 +42,25 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    // Clients
+    public function clients()
+    {
+        return $this->hasMany(Client::class,'user_id','id');
+    }
+
+    // Tasks
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class,'user_id','id');
+    }
+
+
+    // invoice
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class,'user_id','id');
+    }
+
+
 }

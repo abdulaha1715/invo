@@ -192,9 +192,9 @@
             <div class="header_logo">
 
                 @if ( request('preview') == 'yes' )
-                    <img src="{{ asset('img/logo.png') }}"  width="100" class="w-40" style="margin-left:auto">
+                <img src="{{ asset('img/logo.png') }}" width="100" class="w-40" style="margin-left:auto">
                 @else
-                    <img src="img/logo.png" class="w-40" width="100" style="margin-left:auto">
+                <img src="img/logo.png" class="w-40" width="100" style="margin-left:auto">
                 @endif
 
 
@@ -224,7 +224,6 @@
                 <thead>
                     <tr>
                         <th>Description</th>
-                        <th style="text-align: center">Discount ($)</th>
                         <th style="text-align: right">Amount ($)</th>
                     </tr>
                 </thead>
@@ -233,7 +232,6 @@
                     @foreach ($tasks as $task)
                     <tr>
                         <td>{{ $task->name }}</td>
-                        <td style="text-align:center">0</td>
                         <td style="text-align:right">{{ $task->price }}</td>
                     </tr>
                     @endforeach
@@ -247,17 +245,23 @@
                     <span>Subtotal: </span>
                     <strong> ${{ number_format($tasks->sum('price'), 0) }}</strong>
                 </div>
+                @php
+                $discount_type == '%' ? $discount = ($discount * $tasks->sum('price')) / 100 : $discount = $discount;
+                @endphp
                 <div class="single_footer">
                     <span>Discount: </span>
-                    <strong>0</strong>
+                    <strong>{{ $discount_type == '$' ? $discount_type . $discount : $discount
+                        }}</strong>
                 </div>
+
+
                 <div class="single_footer">
                     <span>Total: </span>
-                    <strong>${{ number_format($tasks->sum('price'), 0) }}</strong>
+                    <strong>${{ number_format($tasks->sum('price') - $discount, 0) }}</strong>
                 </div>
             </div>
             <div class="amount_total">
-                <h2><span>Amount Due:</span> <strong>${{ number_format($tasks->sum('price'), 0) }}</strong></h2>
+                <h2><span>Amount Due:</span> <strong>${{ number_format($tasks->sum('price') - $discount, 0) }}</strong></h2>
             </div>
         </div>
         <div class="copyright">
