@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -16,20 +17,10 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $data = Client::where('user_id',Auth::user()->id)->with('tasks')->latest()->paginate(10);
-        return view('client.index')->with('clients',$data);
+        $clients = Client::where('user_id',Auth::user()->id)->with('tasks')->latest()->paginate(10);
+        return view('client.index')->with('clients',$clients);
     }
 
-
-    /**
-     * Search Task By Client
-     */
-    public function searchTaskByClient(Client $client)
-    {
-        return view('task.searchbyclient')->with([
-            'client' => $client
-        ]);
-    }
 
     /**
      * Show the form for creating a new resource.
@@ -91,7 +82,12 @@ class ClientController extends Controller
      */
     public function show(Client $client)
     {
-        return view('client.profile')->with('client',$client);
+        $client =$client->load('tasks','invoices');
+        return view('client.profile')->with([
+            'client'=> $client,
+            'pending_tasks' => $client->tasks->where('status','pending'),
+            'paid_invoices' => $client->invoices->where('status','paid'),
+        ]);
     }
 
     /**

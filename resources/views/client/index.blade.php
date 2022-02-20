@@ -55,7 +55,7 @@
                                 <td class="border py-2 text-center">
                                     <div
                                         class="">
-                                        <a href="{{ route('searchTaskByClient',$client) }}" class="relative px-3 py-1 bg-teal-600 group inline-block uppercase text-white text-sm ">
+                                        <a href="{{ route('task.index') }}?client_id={{ $client->id }}" class="relative px-3 py-1 bg-teal-600 group inline-block uppercase text-white text-sm ">
                                         <span class="absolute group-hover:bg-orange-500 group-hover:text-white group-hover:border-white transition-all from-neutral-300 bg-white text-black border border-black -right-4 -top-4 rounded-full w-7 h-7 leading-7 text-center text-xs">{{ count($client->tasks) }}</span>View</a>
                                     </div>
                                 </td>

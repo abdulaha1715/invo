@@ -191,11 +191,10 @@
             </div>
             <div class="header_logo">
 
-                @if (request()->routeIs('preview.invoice'))
-
-                <img src="{{ asset('img/logo.png') }}" class="w-40" style="margin-left:auto">
+                @if ( request('preview') == 'yes' )
+                    <img src="{{ asset('img/logo.png') }}"  width="100" class="w-40" style="margin-left:auto">
                 @else
-                <img src="img/logo.png" class="w-40" width="80" style="margin-left:auto">
+                    <img src="img/logo.png" class="w-40" width="100" style="margin-left:auto">
                 @endif
 
 

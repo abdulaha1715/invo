@@ -19,13 +19,9 @@ Route::prefix('/')->middleware(['auth'])->group(function () {
     // Client Route
     Route::resource('client', ClientController::class);
 
-    // Tasks By Client
-    Route::get('client/{client:username}/tasks', [ClientController::class, 'searchTaskByClient'])->name('searchTaskByClient');
-
     // Task Route
     Route::resource('task', TaskController::class);
     Route::put('task/{task}/complete', [TaskController::class, 'markAsCcomplete'])->name('markAsCcomplete');
-
 
     // Invoices Route
     Route::prefix('invoices')->group(function () {
@@ -33,8 +29,7 @@ Route::prefix('/')->middleware(['auth'])->group(function () {
         Route::get('create', [InvoiceController::class, 'create'])->name('invoice.create');
         Route::put('{invoice}/update', [InvoiceController::class, 'update'])->name('invoice.update');
         Route::delete('{invoice}/delete', [InvoiceController::class, 'destroy'])->name('invoice.destroy');
-        Route::get('preview', [InvoiceController::class, 'preview'])->name('preview.invoice');
-        Route::get('generate', [InvoiceController::class, 'generate'])->name('invoice.generate');
+        Route::get('inovice', [InvoiceController::class, 'inovice'])->name('inovice');
         Route::get('email/send/{invoice:invoice_id}', [InvoiceController::class, 'sendEmail'])->name('invoice.sendEmail');
     });
 });

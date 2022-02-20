@@ -14,7 +14,8 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
-            <div class="mb-6 bg-white py-10 rounded-md {{ request('client_id') || request('status') ||request('fromDate') || request('endDate') || request('price') ? '' : 'hidden' }}" id="task_filter">
+            <div class="mb-6 bg-white py-10 rounded-md {{ request('client_id') || request('status') ||request('fromDate') || request('endDate') || request('price') ? '' : 'hidden' }}"
+                id="task_filter">
                 <h2 class="text-center font-bold mb-6">Filter Tasks</h2>
                 <form action="{{ route('task.index') }}" method="GET">
                     <div class="flex space-x-3 items-end justify-center">
@@ -22,11 +23,12 @@
                             @error('client_id')
                             <p class="text-red-700 text-sm">{{ $message }}</p>
                             @enderror
-                            <label for="client_id"  class="formLabel">Client</label>
+                            <label for="client_id" class="formLabel">Client</label>
                             <select name="client_id" id="client_id" class="formInput">
                                 <option value="">Select Client</option>
                                 @foreach ($clients as $client)
-                                <option value="{{ $client->id }}" {{ $client->id == old('client_id') || $client->id == request('client_id') ? 'selected' : '' }}>{{ $client->name }}</option>
+                                <option value="{{ $client->id }}" {{ $client->id == old('client_id') || $client->id ==
+                                    request('client_id') ? 'selected' : '' }}>{{ $client->name }}</option>
                                 @endforeach
                             </select>
 
@@ -36,11 +38,13 @@
                             @error('status')
                             <p class="text-red-700 text-sm">{{ $message }}</p>
                             @enderror
-                            <label for="status"  class="formLabel">Status</label>
+                            <label for="status" class="formLabel">Status</label>
                             <select name="status" id="status" class="formInput">
                                 <option value="">Select Status</option>
-                                <option value="pending" {{ old('status') == 'pending' || request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                <option value="complete" {{ old('status') == 'complete' || request('status') == 'complete' ? 'selected' : '' }}>Complete</option>
+                                <option value="pending" {{ old('status')=='pending' || request('status')=='pending'
+                                    ? 'selected' : '' }}>Pending</option>
+                                <option value="complete" {{ old('status')=='complete' || request('status')=='complete'
+                                    ? 'selected' : '' }}>Complete</option>
                             </select>
 
                         </div>
@@ -48,24 +52,28 @@
                             @error('fromDate')
                             <p class="text-red-700 text-sm">{{ $message }}</p>
                             @enderror
-                            <label for="fromDate"  class="formLabel">Start Date</label>
-                            <input type="date" class="formInput" name="fromDate" id="fromDate"  max="{{ now()->format('Y-m-d') }}" value="{{ request('fromDate') }}">
+                            <label for="fromDate" class="formLabel">Start Date</label>
+                            <input type="date" class="formInput" name="fromDate" id="fromDate"
+                                max="{{ now()->format('Y-m-d') }}" value="{{ request('fromDate') }}">
 
                         </div>
                         <div class="">
                             @error('endDate')
                             <p class="text-red-700 text-sm">{{ $message }}</p>
                             @enderror
-                            <label for="endDate"  class="formLabel">End Date</label>
-                            <input type="date" class="formInput" name="endDate" id="endDate" value="{{ request('endDate') !='' ? request('endDate') : '' }}" max="{{ now()->format('Y-m-d') }}">
+                            <label for="endDate" class="formLabel">End Date</label>
+                            <input type="date" class="formInput" name="endDate" id="endDate"
+                                value="{{ request('endDate') !='' ? request('endDate') : '' }}"
+                                max="{{ now()->format('Y-m-d') }}">
 
                         </div>
                         <div class="">
                             @error('price')
                             <p class="text-red-700 text-sm">{{ $message }}</p>
                             @enderror
-                            <label for="price"  class="formLabel">Max Price</label>
-                            <input type="number" class="formInput" name="price" id="price" value="{{ request('price') }}">
+                            <label for="price" class="formLabel">Max Price</label>
+                            <input type="number" class="formInput" name="price" id="price"
+                                value="{{ request('price') }}">
                         </div>
                         <div class="">
                             <button type="submit" class="bg-purple-600 text-white px-3 py-2">Filter</button>
@@ -79,7 +87,9 @@
                 <div class="p-6 bg-white border-b border-gray-200">
 
                     <div class="text-right">
-                        <button id="task_filter_btn" type="button" class="px-3 py-1 bg-blue-400 text-white mb-6">{{ request('client_id') || request('status') ||request('fromDate') || request('endDate') || request('price') ? 'Close Filter' : 'Filter' }}</button>
+                        <button id="task_filter_btn" type="button" class="px-3 py-1 bg-blue-400 text-white mb-6">{{
+                            request('client_id') || request('status') ||request('fromDate') || request('endDate') ||
+                            request('price') ? 'Close Filter' : 'Filter' }}</button>
                     </div>
 
                     <table class="w-full border-collapse">
@@ -94,22 +104,37 @@
                         </thead>
                         <tbody>
 
-
-
                             @foreach ($tasks as $task)
 
                             <tr>
                                 <td class="border py-2 text-left px-2">
-                                    <a class=" font-semibold hover:text-purple-700" href="{{ route('task.show', $task->slug) }}">{{ $task->name }}</a>
+                                    <a class=" font-semibold hover:text-purple-700"
+                                        href="{{ route('task.show', $task->slug) }}">{{ $task->name }}</a>
                                 </td>
                                 <td class="border py-2 text-center text-sm">{{ $task->price }}</td>
-                                <td class="border py-2 text-center capitalize text-sm">{{ $task->status }}</td>
-                                <td class="border py-2 text-left px-3  text-sm">
-                                    <a class="text-black font-bold hover:text-purple-700" href="{{ route('searchTaskByClient', $task->client) }}">{{ $task->client->name }}</a>
+                                <td class="border py-2 text-center capitalize text-sm">
+                                    {{ $task->status }}
+                                    @if ($task->status == 'pending')
+
+                                    <form action="{{ route('markAsCcomplete', $task) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit"
+                                            class="border-2 bg-teal-500 w-full text-white hover:bg-transparent hover:text-black transition-all duration-300 px-3 py-1 mr-2">Done</button>
+                                    </form>
+                                    @endif
+                                </td>
+                                <td class="border py-2 text-left px-3 text-sm">
+                                    <a class="text-black font-bold hover:text-purple-700"
+                                        href="{{ route('task.index') }}?client_id={{ $task->client->id }}">{{ $task->client->name
+                                        }}</a>
                                 </td>
                                 <td class="border py-2 text-center px-3">
 
                                     <div class="flex justify-center">
+
+
+
                                         <a href="{{ route('task.edit', $task) }}"
                                             class="border-2 bg-purple-500 text-white hover:bg-transparent hover:text-black transition-all duration-300 px-3 py-1 mr-2">Edit</a>
 

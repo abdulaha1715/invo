@@ -84,6 +84,7 @@
                         <table class="w-full border-collapse">
                             <thead>
                                 <tr>
+                                    <th class="border py-2">Select</th>
                                     <th class="border py-2">Name</th>
                                     <th class="border py-2">Status</th>
                                     <th class="border py-2">Price</th>
@@ -91,26 +92,32 @@
                             </thead>
                             <tbody>
 
-                                @foreach ($tasks as $task)
+                                <form action="{{ route('inovice') }}" method="GET" id="tasksInvoiceFrom">
+                                    @csrf
+                                    @foreach ($tasks as $task)
+                                    <tr>
+                                        <td class="border py-2 text-center px-3">
+                                            <input type="checkbox" name="invoice_ids[]" value="{{ $task->id }}" checked>
+                                        </td>
+                                        <td class="border py-2 text-left px-3">{{ $task->name }}</td>
+                                        <td class="border py-2 text-center capitalize">{{ $task->status }}</td>
+                                        <td class="border py-2 text-center">{{ $task->price }}</td>
+                                    </tr>
+                                    @endforeach
 
-                                <tr>
-                                    <td class="border py-2 text-left px-3">{{ $task->name }}</td>
-                                    <td class="border py-2 text-center capitalize">{{ $task->status }}</td>
-                                    <td class="border py-2 text-center">{{ $task->price }}</td>
-                                </tr>
-                                @endforeach
-
+                                </form>
                             </tbody>
                         </table>
                     </div>
 
 
                     <div class="flex justify-center mt-5 space-x-6">
-                        <a href="{{ route('preview.invoice' ) }}{{ '?client_id=' .request('client_id') . '&status=' . request('status') . '&fromDate=' . request('fromDate') . '&endDate=' .request('endDate') }}"
-                            class="bg-teal-600 text-white px-3 py-2">Preview</a>
 
-                        <a href="{{ route('invoice.generate' ) }}{{ '?client_id=' .request('client_id') . '&status=' . request('status') . '&fromDate=' . request('fromDate') . '&endDate=' .request('endDate') }}"
-                            class="bg-pink-600 text-white px-3 py-2">Generate</a>
+                        <button type="submit" name="preview" value="yes" form="tasksInvoiceFrom"
+                            class="bg-teal-600 text-white px-3 py-2">Preview</button>
+
+                        <button type="submit" name="generate" value="yes" form="tasksInvoiceFrom"
+                            class="bg-pink-600 text-white px-3 py-2">Generate</button>
                     </div>
 
                     @endif

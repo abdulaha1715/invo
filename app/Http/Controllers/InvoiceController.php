@@ -21,10 +21,27 @@ class InvoiceController extends Controller
      *
      * @return all invoices
      */
-    public function index()
+    public function index(Request $request)
     {
+        $invoices = Invoice::with('client')->latest();
+
+        if( !empty($request->client_id) ){
+            $invoices = $invoices->where('client_id',$request->client_id);
+        }
+
+        if( !empty($request->status) ){
+            $invoices = $invoices->where('status',$request->status);
+        }
+
+        if( !empty($request->emailsent) ){
+            $invoices = $invoices->where('email_sent',$request->emailsent);
+        }
+
+        $invoices = $invoices->paginate(10);
+
         return view('invoice.index')->with([
-            'invoices' => Invoice::with('client')->latest()->paginate(10),
+            'clients' => Client::where('user_id',Auth::user()->id)->get(),
+            'invoices' => $invoices,
         ]);
     }
 
@@ -123,20 +140,28 @@ class InvoiceController extends Controller
 
 
     /**
-     * Method preview
+     * Method inovice
      *
-     * @param Request $request
+     * @param Request $request [explicite description]
      *
      * @return void
      */
-    public function preview(Request $request)
+    public function inovice(Request $request)
     {
-        return view('invoice.preview')->with([
-            'invoice_no'  => 'INVO_'.rand(23435252,235235326532),
-            'user'  => Auth::user(),
-            'tasks' => $this->getInvoiceData($request),
-        ]);
+        if( !empty($request->generate) && $request->generate == 'yes' ){
+            $this->generate($request);
+            return redirect()->route('invoice.index')->with('success', 'Invocie Created');
+        }
+        if( !empty($request->preview) && $request->preview == 'yes' ){
+            $tasks = Task::whereIn('id',$request->invoice_ids)->get();
+            return view('invoice.preview')->with([
+                'invoice_no'  => 'INVO_'.rand(23435252,235235326532),
+                'user'  => Auth::user(),
+                'tasks' => $tasks,
+            ]);
+        }
     }
+
 
     /**
      * Method generate
@@ -147,11 +172,13 @@ class InvoiceController extends Controller
      */
     public function generate(Request $request)
     {
+
         $invo_no  ='INVO_'.rand(23435252,235235326532);
+        $tasks = Task::whereIn('id',$request->invoice_ids)->get();
         $data = [
             'invoice_no'  => $invo_no ,
             'user'  => Auth::user(),
-            'tasks' => $this->getInvoiceData($request),
+            'tasks' => $tasks,
         ];
 
         // Generation PDF
@@ -163,13 +190,13 @@ class InvoiceController extends Controller
         // Insert Invoice data
         Invoice::create([
             'invoice_id'    => $invo_no,
-            'client_id'     => $request->client_id,
+            'client_id'     => $tasks->first()->client->id,
             'user_id'       => Auth::user()->id,
             'status'        => 'unpaid',
             'download_url'  => $invo_no.'.pdf'
         ]);
 
-        return redirect()->route('invoice.index')->with('success', 'Invocie Created');
+
     }
 
     /**
