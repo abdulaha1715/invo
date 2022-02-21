@@ -184,7 +184,6 @@ class InvoiceController extends Controller
      */
     public function generate(Request $request)
     {
-
         if( !empty($request->discount) && !empty($request->discount_type) ){
             $discount = $request->discount;
             $discount_type = $request->discount_type;

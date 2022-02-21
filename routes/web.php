@@ -43,6 +43,11 @@ Route::prefix('/')->middleware(['auth'])->group(function () {
         Route::get('inovice', [InvoiceController::class, 'inovice'])->name('inovice');
         Route::get('email/send/{invoice:invoice_id}', [InvoiceController::class, 'sendEmail'])->name('invoice.sendEmail');
     });
+
+    Route::get('settings', function () {
+        return view('settings');
+    });
+
 });
 
 // Auth Routes
