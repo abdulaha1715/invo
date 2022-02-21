@@ -2,125 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Client;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-class ClientController extends Controller
+class SettingsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        $clients = Client::where('user_id',Auth::user()->id)->with('tasks')->latest()->paginate(10);
-        return view('client.index')->with('clients',$clients);
-    }
-
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return view('client.create')->with('countries', $this->countries_list);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name'  => ['required','max:255','string'],
-            'username'  => ['required','max:255','string'],
-            'email'  => ['required','max:255','string','email'],
-            'phone'  => ['max:255','string'],
-            'country'  => ['max:255','string','not_in:none'],
-            'status'  => ['not_in:none','string'],
-            'thumbnail'  => ['image'],
-        ]);
-
-
-        $thumb = null;
-        if( !empty($request->file('thumbnail')) ){
-            $thumb = time() . '-' . $request->file('thumbnail')->getClientOriginalName();
-            $request->file('thumbnail')->storeAs('public/uploads', $thumb);
-        }
-
-        Client::create([
-            'name'  => $request->name,
-            'username'  => $request->username,
-            'email'  => $request->email,
-            'phone'  => $request->phone,
-            'country'  => $request->country,
-            'thumbnail'  => $thumb,
-            'user_id'  => Auth::user()->id,
-            'status'  => $request->status,
-        ]);
-
-        return redirect()->route('client.index')->with('success','Client Added Successfully!');
-
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Client  $client
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Client $client)
-    {
-        $client =$client->load('tasks','invoices');
-        return view('client.profile')->with([
-            'client'=> $client,
-            'pending_tasks' => $client->tasks->where('status','pending'),
-            'paid_invoices' => $client->invoices->where('status','paid'),
-        ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Client  $client
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Client $client)
-    {
-        return view('client.edit')->with([
-            'client' => $client,
+        return view('settings')->with([
             'countries' => $this->countries_list,
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Client  $client
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Client $client)
+    public function update(Request $request)
     {
         $request->validate([
-            'name'  => ['required','max:255','string'],
-            'username'  => ['required','max:255','string'],
-            'email'  => ['required','max:255','string','email'],
-            'phone'  => ['max:255','string'],
-            'country'  => ['max:255','string','not_in:none'],
-            'thumbnail'  => ['image'],
+            'name'      => ['required', 'max:255', 'string'],
+            'email'     => ['required', 'max:255', 'string'],
+            'company'   => ['max:255', 'string'],
+            'phone'     => ['max:255', 'string'],
+            'country'     => ['max:255', 'string'],
         ]);
 
-        $thumb = $client->thumbnail;
+        $user = User::find(Auth::id());
+
+        $thumb = $user->thumbnail;
 
         if( !empty($request->file('thumbnail')) ){
 
@@ -131,40 +40,31 @@ class ClientController extends Controller
             $request->file('thumbnail')->storeAs('public/uploads', $thumb);
         }
 
+        if( !empty($request->file('invoice_logo')) ){
 
-        Client::find($client->id)->update([
-            'name'  => $request->name,
-            'username'  => $request->username,
-            'email'  => $request->email,
-            'phone'  => $request->phone,
-            'country'  => $request->country,
-            'thumbnail'  => $thumb,
-            'user_id'  => Auth::user()->id,
-            'status'  => $request->status,
+            $invoice = 'invoice.png';
+
+            $request->file('invoice_logo')->storeAs('public/uploads', $invoice);
+        }
+
+        $user->update([
+            'name'      => $request->name,
+            'email'     => $request->email,
+            'company'   => $request->company,
+            'phone'     => $request->phone,
+            'country'   => $request->country,
+            'thumbnail'   => $thumb,
         ]);
 
-        return redirect()->route('client.index')->with('success','Client Updated');
 
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Client  $client
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Client $client)
-    {
-        Storage::delete('public/uploads/'.$client->thumbnail);
 
-        $client->delete();
-        return redirect()->route('client.index')->with('success','Client Deleted!');
+
+        return redirect()->route('settings.index')->with('success','User Updated!');
     }
 
 
-
-
-
+// Country List
     public $countries_list = array(
         "Afghanistan",
         "Aland Islands",
@@ -193,8 +93,6 @@ class ClientController extends Controller
         "Bermuda",
         "Bhutan",
         "Bolivia",
-        "Bonaire, Sint Eustatius and Saba",
-        "Bosnia and Herzegovina",
         "Botswana",
         "Bouvet Island",
         "Brazil",
@@ -208,16 +106,13 @@ class ClientController extends Controller
         "Canada",
         "Cape Verde",
         "Cayman Islands",
-        "Central African Republic",
         "Chad",
         "Chile",
         "China",
         "Christmas Island",
-        "Cocos (Keeling) Islands",
         "Colombia",
         "Comoros",
         "Congo",
-        "Congo, Democratic Republic of the Congo",
         "Cook Islands",
         "Costa Rica",
         "Cote D'Ivoire",
@@ -237,14 +132,12 @@ class ClientController extends Controller
         "Eritrea",
         "Estonia",
         "Ethiopia",
-        "Falkland Islands (Malvinas)",
         "Faroe Islands",
         "Fiji",
         "Finland",
         "France",
         "French Guiana",
         "French Polynesia",
-        "French Southern Territories",
         "Gabon",
         "Gambia",
         "Georgia",
@@ -262,15 +155,13 @@ class ClientController extends Controller
         "Guinea-Bissau",
         "Guyana",
         "Haiti",
-        "Heard Island and Mcdonald Islands",
-        "Holy See (Vatican City State)",
         "Honduras",
         "Hong Kong",
         "Hungary",
         "Iceland",
         "India",
         "Indonesia",
-        "Iran, Islamic Republic of",
+        "Iran",
         "Iraq",
         "Ireland",
         "Isle of Man",
@@ -283,22 +174,21 @@ class ClientController extends Controller
         "Kazakhstan",
         "Kenya",
         "Kiribati",
-        "Korea, Democratic People's Republic of",
-        "Korea, Republic of",
+        "Korea",
         "Kosovo",
         "Kuwait",
         "Kyrgyzstan",
-        "Lao People's Democratic Republic",
+        "Lao",
         "Latvia",
         "Lebanon",
         "Lesotho",
         "Liberia",
-        "Libyan Arab Jamahiriya",
+        "Libyan",
         "Liechtenstein",
         "Lithuania",
         "Luxembourg",
         "Macao",
-        "Macedonia, the Former Yugoslav Republic of",
+        "Macedonia",
         "Madagascar",
         "Malawi",
         "Malaysia",
@@ -311,7 +201,7 @@ class ClientController extends Controller
         "Mauritius",
         "Mayotte",
         "Mexico",
-        "Micronesia, Federated States of",
+        "Micronesia",
         "Moldova, Republic of",
         "Monaco",
         "Mongolia",
@@ -337,7 +227,7 @@ class ClientController extends Controller
         "Oman",
         "Pakistan",
         "Palau",
-        "Palestinian Territory, Occupied",
+        "Palestinian",
         "Panama",
         "Papua New Guinea",
         "Paraguay",
@@ -358,7 +248,7 @@ class ClientController extends Controller
         "Saint Lucia",
         "Saint Martin",
         "Saint Pierre and Miquelon",
-        "Saint Vincent and the Grenadines",
+        "Saint Vincent",
         "Samoa",
         "San Marino",
         "Sao Tome and Principe",
@@ -375,7 +265,7 @@ class ClientController extends Controller
         "Solomon Islands",
         "Somalia",
         "South Africa",
-        "South Georgia and the South Sandwich Islands",
+        "South Georgia",
         "South Sudan",
         "Spain",
         "Sri Lanka",
@@ -386,9 +276,8 @@ class ClientController extends Controller
         "Sweden",
         "Switzerland",
         "Syrian Arab Republic",
-        "Taiwan, Province of China",
+        "Taiwan",
         "Tajikistan",
-        "Tanzania, United Republic of",
         "Thailand",
         "Timor-Leste",
         "Togo",
@@ -405,7 +294,6 @@ class ClientController extends Controller
         "United Arab Emirates",
         "United Kingdom",
         "United States",
-        "United States Minor Outlying Islands",
         "Uruguay",
         "Uzbekistan",
         "Vanuatu",
@@ -419,7 +307,6 @@ class ClientController extends Controller
         "Zambia",
         "Zimbabwe"
     );
-
 
 
 }

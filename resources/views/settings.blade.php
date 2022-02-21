@@ -30,68 +30,74 @@
 
 
                 <div class="bg-white p-8 mt-6">
-                    <form action="" method="POST">
+                    <form action="{{ route('settings.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        @method('PUT')
                         <h2 class="font-bold">Personal Information</h2>
-                    <div class="flex justify-between">
-                        <div class="flex-1">
-                            <div class="mt-6 flex justify-between items-center">
-                                <label for="name" class="w-1/4">Name</label>
-                                <span class="w-10 text-center">:</span>
-                                <input type="text" class="flex-1" name="name" id="name"
-                                    value="{{ Auth::user()->name }}">
+                        <div class="flex justify-between">
+                            <div class="flex-1">
+                                <div class="mt-6 flex justify-between items-center">
+                                    <label for="name" class="w-1/4">Name</label>
+                                    <span class="w-10 text-center">:</span>
+                                    <input type="text" class="flex-1" name="name" id="name"
+                                        value="{{ Auth::user()->name }}">
+                                </div>
+                                <div class="mt-6 flex justify-between items-center">
+                                    <label for="email" class="w-1/4">Email</label>
+                                    <span class="w-10 text-center">:</span>
+                                    <input type="text" class="flex-1" name="email" id="email"
+                                        value="{{ Auth::user()->email }}">
+                                </div>
+                                <div class="mt-6 flex justify-between items-center">
+                                    <label for="company" class="w-1/4">Company</label>
+                                    <span class="w-10 text-center">:</span>
+                                    <input type="text" class="flex-1" name="company" id="company"
+                                        value="{{ Auth::user()->company }}">
+                                </div>
+                                <div class="mt-6 flex justify-between items-center">
+                                    <label for="phone" class="w-1/4">Phone</label>
+                                    <span class="w-10 text-center">:</span>
+                                    <input type="text" class="flex-1" name="phone" id="phone"
+                                        value="{{ Auth::user()->phone }}">
+                                </div>
+                                <div class="mt-6 flex justify-between items-center">
+                                    <label for="country" class="w-1/4">Country</label>
+                                    <span class="w-10 text-center">:</span>
+                                    <select name="country" id="country" class="flex-1">
+
+                                        @foreach ($countries as $country)
+                                        <option value="{{ $country }}" {{ $country == Auth::user()->country ? 'selected' : '' }}>{{ $country }}</option>
+                                        @endforeach
+
+
+                                    </select>
+                                </div>
                             </div>
-                            <div class="mt-6 flex justify-between items-center">
-                                <label for="email" class="w-1/4">Email</label>
-                                <span class="w-10 text-center">:</span>
-                                <input type="text" class="flex-1" name="email" id="email"
-                                    value="{{ Auth::user()->email }}">
-                            </div>
-                            <div class="mt-6 flex justify-between items-center">
-                                <label for="company" class="w-1/4">Company</label>
-                                <span class="w-10 text-center">:</span>
-                                <input type="text" class="flex-1" name="company" id="company"
-                                    value="{{ Auth::user()->company }}">
-                            </div>
-                            <div class="mt-6 flex justify-between items-center">
-                                <label for="phone" class="w-1/4">Phone</label>
-                                <span class="w-10 text-center">:</span>
-                                <input type="text" class="flex-1" name="phone" id="phone"
-                                    value="{{ Auth::user()->phone }}">
-                            </div>
-                            <div class="mt-6 flex justify-between items-center">
-                                <label for="country" class="w-1/4">Country</label>
-                                <span class="w-10 text-center">:</span>
-                                <select name="country" id="country" class="flex-1" >
-                                    <option value="{{ Auth::user()->country }}">{{ Auth::user()->country }}</option>
-                                </select>
+                            <div class="flex-1 ml-8 flex flex-col justify-between">
+                                <div class="flex mt-6 justify-between">
+                                    <div class="border p-5 flex flex-col">
+                                        <label for="thumbnail" class="w-full mb-2 cursor-pointer">Thumbnail</label>
+
+                                        <input type="file" class="flex-1" name="thumbnail" id="thumbnail">
+                                    </div>
+                                    <div class="border p-2"><img src="{{ getImageUrl( Auth::user()->thumbnail ) }}" class="w-20"
+                                            alt="">
+                                    </div>
+                                </div>
+                                <div class="flex justify-between">
+                                    <div class="border p-5 flex flex-col">
+                                        <label for="logo" class="w-full mb-2 cursor-pointer">Invoice Logo</label>
+
+                                        <input type="file" class="flex-1" name="invoice_logo" id="logo">
+                                    </div>
+                                    <div class="border p-2"><img src="{{ asset('storage/uploads/invoice.png') }}" class="w-20" alt="">
+                                    </div>
+                                </div>
+                                <div class="">
+                                    <button type="submit"
+                                        class="w-full p-2 bg-teal-600 text-white font-bold hover:bg-orange-400 duration-300 transition-all">UPDATE</button>
+                                </div>
                             </div>
                         </div>
-                        <div class="flex-1 ml-8 flex flex-col justify-between">
-                            <div class="flex mt-6 justify-between">
-                                <div class="border p-5 flex flex-col">
-                                    <label for="thumbnail" class="w-full mb-2 cursor-pointer">Thumbnail</label>
-
-                                    <input type="file" class="flex-1" name="thumbnail" id="thumbnail">
-                                </div>
-                                <div class="border p-2"><img src="{{ Auth::user()->thumbnail }}" class="w-20" alt="">
-                                </div>
-                            </div>
-                            <div class="flex justify-between">
-                                <div class="border p-5 flex flex-col">
-                                    <label for="logo" class="w-full mb-2 cursor-pointer">Invoice Logo</label>
-
-                                    <input type="file" class="flex-1" name="logo" id="logo">
-                                </div>
-                                <div class="border p-2"><img src="{{ asset('img/logo.png') }}" class="w-20" alt="">
-                                </div>
-                            </div>
-                            <div class="">
-                                <button type="submit" class="w-full p-2 bg-teal-600 text-white font-bold hover:bg-orange-400 duration-300 transition-all">UPDATE</button>
-                            </div>
-                        </div>
-                    </div>
                     </form>
 
                 </div>

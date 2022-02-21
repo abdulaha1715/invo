@@ -47,7 +47,7 @@
                     </x-slot>
 
                     <x-slot name="content">
-                        <x-dropdown-link :href="route('settings')" onclick="">
+                        <x-dropdown-link :href="route('settings.index')" onclick="">
                             {{ __('Settings') }}
                         </x-dropdown-link>
                         <!-- Authentication -->

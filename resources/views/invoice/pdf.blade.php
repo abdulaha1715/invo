@@ -192,9 +192,9 @@
             <div class="header_logo">
 
                 @if ( request('preview') == 'yes' )
-                    <img src="{{ asset('img/logo.png') }}"  width="100" class="w-40" style="margin-left:auto">
+                    <img src="{{ asset('storage/uploads/invoice.png') }}"  width="100" class="w-40" style="margin-left:auto">
                 @else
-                    <img src="img/logo.png" class="w-40" width="100" style="margin-left:auto">
+                    <img src="storage/uploads/invoice.png" class="w-40" width="100" style="margin-left:auto">
                 @endif
 
 

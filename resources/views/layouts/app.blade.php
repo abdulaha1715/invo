@@ -30,7 +30,7 @@
                     {{ $header }}
                 </div>
             </header>
-
+            @include('layouts.messages')
             <!-- Page Content -->
             <main class="">
                 {{ $slot }}

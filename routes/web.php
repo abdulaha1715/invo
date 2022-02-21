@@ -4,6 +4,7 @@ use App\Http\Controllers\api\NewController;
 use App\Http\Controllers\api\testController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TaskController;
 use App\Mail\InvoiceEmail;
 use App\Models\Client;
@@ -49,9 +50,9 @@ Route::prefix('/')->middleware(['auth'])->group(function () {
         Route::get('email/send/{invoice:invoice_id}', [InvoiceController::class, 'sendEmail'])->name('invoice.sendEmail');
     });
 
-    Route::get('settings', function () {
-        return view('settings');
-    })->name('settings');
+    // Settings
+    Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::post('settings/update', [SettingsController::class, 'update'])->name('settings.update');
 
 });
 
