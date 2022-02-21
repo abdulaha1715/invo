@@ -11,10 +11,15 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/', function () {
+    return view('welcome');
+});
+
 
 // Backend
 Route::prefix('/')->middleware(['auth'])->group(function () {
 
+    // Dashboard
     Route::get('dashboard', function () {
 
         $user = User::find(Auth::user()->id);
@@ -46,7 +51,7 @@ Route::prefix('/')->middleware(['auth'])->group(function () {
 
     Route::get('settings', function () {
         return view('settings');
-    });
+    })->name('settings');
 
 });
 
