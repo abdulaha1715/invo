@@ -103,7 +103,7 @@
                         </thead>
                         <tbody>
 
-                            @foreach ($tasks as $task)
+                            @forelse ($tasks as $task)
 
                             <tr>
                                 <td class="border py-2 text-left px-2">
@@ -115,7 +115,7 @@
                                     {{ $task->status }}
                                     @if ($task->status == 'pending')
 
-                                    <form action="{{ route('markAsCcomplete', $task) }}" method="POST" onsubmit="return confirm('Are you sure?');">
+                                    <form action="{{ route('markAsComplete', $task) }}" method="POST" onsubmit="return confirm('Are you sure?');">
                                         @csrf
                                         @method('PUT')
                                         <button type="submit"
@@ -154,7 +154,13 @@
                             </tr>
 
 
-                            @endforeach
+                            @empty
+
+                            <tr>
+                                <td class="border py-2 text-center" colspan="5">No Task Found!</td>
+                            </tr>
+
+                            @endforelse
 
 
                         </tbody>

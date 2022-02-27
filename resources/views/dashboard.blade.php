@@ -30,7 +30,7 @@
                         @forelse ($pending_tasks->slice(0,5) as $task)
                             <li><a class="text-white hover:text-black transition-all duration-300"  href="{{ route('task.show',$task->slug) }}">{{ $task->name }}</a></li>
                         @empty
-                        <li>No tasks found!</li>
+                        <li class="text-white">No tasks found!</li>
                         @endforelse
                     </ul>
                 </div>

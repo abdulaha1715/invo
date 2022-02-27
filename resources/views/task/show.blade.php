@@ -28,7 +28,7 @@
 
                             @if ($task->status == 'pending')
                             <div class="">
-                                <form action="{{ route('markAsCcomplete', $task) }}" method="POST">
+                                <form action="{{ route('markAsComplete', $task) }}" method="POST">
                                     @csrf
                                     @method('PUT')
                                     <button type="submit"

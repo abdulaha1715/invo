@@ -23,7 +23,7 @@ class InvoiceController extends Controller
     public function index(Request $request)
     {
         // Get latest invoices
-        $invoices = Invoice::with('client')->latest();
+        $invoices = Invoice::with('client')->where('user_id',Auth::id())->latest();
 
         // filter by clients
         if (!empty($request->client_id)) {
@@ -120,7 +120,6 @@ class InvoiceController extends Controller
             return redirect()->route('invoice.index')->with('error', $th->getMessage());
         }
     }
-
 
 
     /**

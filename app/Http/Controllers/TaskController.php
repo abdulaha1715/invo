@@ -18,7 +18,7 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         // get tasks ordre by id
-        $tasks = Task::where('user_id', Auth::user()->id)->orderBy('id', 'DESC');
+        $tasks = Task::where('user_id', Auth::id())->orderBy('id', 'DESC');
 
         // filter by client
         if (!empty($request->client_id)) {
@@ -50,7 +50,7 @@ class TaskController extends Controller
 
         // return view
         return view('task.index')->with([
-            'clients' => Client::where('user_id', Auth::user()->id)->get(),
+            'clients' => Client::where('user_id', Auth::id())->get(),
             'tasks' => $tasks,
         ]);
     }
@@ -63,7 +63,7 @@ class TaskController extends Controller
     public function create()
     {
         return view('task.create')->with([
-            'clients' => Client::all(),
+            'clients' => Client::where('user_id', Auth::id())->get(),
         ]);
     }
 
@@ -86,7 +86,7 @@ class TaskController extends Controller
                 'price'  => $request->price,
                 'description'  => $request->description,
                 'client_id'  => $request->client_id,
-                'user_id'  => Auth::user()->id,
+                'user_id'  => Auth::id(),
             ]);
 
             // return response
@@ -119,7 +119,7 @@ class TaskController extends Controller
     {
         return view('task.edit')->with([
             'task' => $task,
-            'clients' => Client::where('user_id', Auth::user()->id)->get(),
+            'clients' => Client::where('user_id', Auth::id())->get(),
         ]);
     }
 
@@ -138,7 +138,6 @@ class TaskController extends Controller
             'name'      => ['required', 'max:255', 'string'],
             'price'     => ['required', 'integer'],
             'client_id' => ['required', 'max:255', 'not_in:none'],
-            'description' => ['required'],
         ]);
     }
 
@@ -162,7 +161,7 @@ class TaskController extends Controller
                 'price'        => $request->price,
                 'description'  => $request->description,
                 'client_id'    => $request->client_id,
-                'user_id'      => Auth::user()->id,
+                'user_id'      => Auth::id(),
             ]);
 
             // return
