@@ -173,13 +173,15 @@ class ClientController extends Controller
             if (count($pending_tasks) == 0) {
                 Storage::delete('public/uploads/' . $client->thumbnail);
                 $client->delete();
+                $message = 'Client deleted';
             } else {
                 $client->update([
                     'status'    => 'inactive'
                 ]);
+                $message = 'Client is inactive!';
             }
             // Return Response
-            return redirect()->route('client.index')->with('success', 'Client soft Deleted!');
+            return redirect()->route('client.index')->with('success', $message);
         } catch (\Throwable $th) {
             //throw $th;
             return redirect()->route('client.index')->with('error', $th->getMessage());

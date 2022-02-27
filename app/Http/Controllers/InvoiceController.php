@@ -92,7 +92,7 @@ class InvoiceController extends Controller
                 'status'    => $invoice->status == 'unpaid' ?  'paid' : 'unpaid'
             ]);
             // return response
-            return redirect()->route('invoice.index')->with('success', 'Invoice Payment marked as paid!');
+            return redirect()->route('invoice.index')->with('success', 'Invoice payment status updated!');
         } catch (\Throwable $th) {
             //throw $th;
             return redirect()->route('invoice.index')->with('error', $th->getMessage());
