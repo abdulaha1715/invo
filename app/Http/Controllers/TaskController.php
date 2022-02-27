@@ -17,41 +17,48 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
+        // get tasks ordre by id
+        $tasks = Task::where('user_id', Auth::user()->id)->orderBy('id', 'DESC');
 
-        $tasks = Task::where('user_id', Auth::user()->id)->orderBy('id','DESC');
-
-        if( !empty($request->client_id) ){
-            $tasks = $tasks->where('client_id',$request->client_id);
+        // filter by client
+        if (!empty($request->client_id)) {
+            $tasks = $tasks->where('client_id', $request->client_id);
         }
 
-        if( !empty($request->status) ){
-            $tasks = $tasks->where('status',$request->status);
+        // filter by status
+        if (!empty($request->status)) {
+            $tasks = $tasks->where('status', $request->status);
         }
 
-        if( !empty($request->fromDate) ){
+        // filter by from date
+        if (!empty($request->fromDate)) {
             $tasks = $tasks->whereDate('created_at', '>=', $request->fromDate);
         }
-        if( !empty($request->endDate) ){
+
+        // filter by end date
+        if (!empty($request->endDate)) {
             $tasks = $tasks->whereDate('created_at', '<=', $request->endDate);
         }
 
-        if( !empty($request->price) ){
+        // filter by price
+        if (!empty($request->price)) {
             $tasks = $tasks->where('price', '<=', $request->price);
         }
 
-
+        // tasks with pagination
         $tasks = $tasks->paginate(10)->withQueryString();
 
+        // return view
         return view('task.index')->with([
-            'clients' => Client::where('user_id',Auth::user()->id)->get(),
+            'clients' => Client::where('user_id', Auth::user()->id)->get(),
             'tasks' => $tasks,
         ]);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new tasks.
      *
-     * @return \Illuminate\Http\Response
+     * @return view with clients
      */
     public function create()
     {
@@ -61,69 +68,82 @@ class TaskController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created tasks in database.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
+        // validation
         $this->taskValidation($request);
 
-        Task::create([
-            'name'  => $request->name,
-            'slug'  => Str::slug($request->name),
-            'price'  => $request->price,
-            'description'  => $request->description,
-            'client_id'  => $request->client_id,
-            'user_id'  => Auth::user()->id,
-        ]);
+        try {
+            // tasks store in database
+            Task::create([
+                'name'  => $request->name,
+                'slug'  => Str::slug($request->name),
+                'price'  => $request->price,
+                'description'  => $request->description,
+                'client_id'  => $request->client_id,
+                'user_id'  => Auth::user()->id,
+            ]);
 
-        return redirect()->route('task.index')->with('success','Task Created');
-
+            // return response
+            return redirect()->route('task.index')->with('success', 'Task Created');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return redirect()->route('task.index')->with('error', $th->getMessage());
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified task.
      *
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
     public function show($slug)
     {
-        $task = Task::where('slug',$slug)->get()->first();
-        return view('task.show')->with('task',$task);
+        // return view with task search by slug
+        return view('task.show')->with('task', Task::where('slug', $slug)->get()->first());
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified task.
      *
      * @param  \App\Models\Task  $task
      * @return \Illuminate\Http\Response
      */
     public function edit(Task $task)
     {
-       return view('task.edit')->with([
-        'task' => $task,
-        'clients' => Client::where('user_id',Auth::user()->id)->get(),
-       ]);
+        return view('task.edit')->with([
+            'task' => $task,
+            'clients' => Client::where('user_id', Auth::user()->id)->get(),
+        ]);
     }
 
 
 
+    /**
+     * Task validation
+     *
+     * @param Request $request
+     *
+     * @return validate data
+     */
     public function taskValidation(Request $request)
     {
         return $request->validate([
-            'name'      => ['required','max:255','string'],
-            'price'     => ['required','integer'],
-            'client_id' => ['required','max:255','not_in:none'],
+            'name'      => ['required', 'max:255', 'string'],
+            'price'     => ['required', 'integer'],
+            'client_id' => ['required', 'max:255', 'not_in:none'],
             'description' => ['required'],
         ]);
-
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified task in database.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Task  $task
@@ -131,40 +151,63 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
+        // validation
         $this->taskValidation($request);
 
-        $task->update([
-            'name'  => $request->name,
-            'slug'  => Str::slug($request->name),
-            'price'  => $request->price,
-            'description'  => $request->description,
-            'client_id'  => $request->client_id,
-            'user_id'  => Auth::user()->id,
-        ]);
+        try {
+            // update data
+            $task->update([
+                'name'         => $request->name,
+                'slug'         => Str::slug($request->name),
+                'price'        => $request->price,
+                'description'  => $request->description,
+                'client_id'    => $request->client_id,
+                'user_id'      => Auth::user()->id,
+            ]);
 
-        return redirect()->route('task.index')->with('success','Task Updated');
+            // return
+            return redirect()->route('task.index')->with('success', 'Task Updated');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return redirect()->route('task.index')->with('error', $th->getMessage());
+        }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified task from database.
      *
-     * @param  \App\Models\Task  $task
+     * @param  \App\Models\Task $task
      * @return \Illuminate\Http\Response
      */
     public function destroy(Task $task)
     {
-        $task->delete();
-        return redirect()->route('task.index')->with('success','Task Deleted');
+        try {
+            $task->delete();
+            return redirect()->route('task.index')->with('success', 'Task Deleted');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return redirect()->route('task.index')->with('error', $th->getMessage());
+        }
     }
 
 
-    public function markAsCcomplete(Task $task)
+    /**
+     * Mark task as complete
+     *
+     * @param Task $task [explicite description]
+     *
+     * @return void
+     */
+    public function markAsComplete(Task $task)
     {
-
-        $task->update([
-            'status' => 'complete'
-        ]);
-
-        return redirect()->back()->with('success','Mark as Completed');
+        try {
+            $task->update([
+                'status' => 'complete'
+            ]);
+            return redirect()->back()->with('success', 'Mark as Completed');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return redirect()->route('task.index')->with('error', $th->getMessage());
+        }
     }
 }

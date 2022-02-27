@@ -5,34 +5,18 @@
         </h2>
     </x-slot>
 
-
     <div class="">
         <div class="container mx-auto py-10">
             <div class="grid grid-cols-4 gap-5">
-                <div class="bg-gradient-to-tr from-cyan-300 to-white rounded-md">
-                    <a href="{{ route('client.index') }}" class="flex px-10 py-14 flex-col items-center">
-                        <h1 class="font-bold text-3xl">{{ count($user->clients) }}</h1>
-                        <h2 class="text-emerald-900 font-black uppercase">Clients</h2>
-                    </a>
-                </div>
-                <div class="bg-gradient-to-tl from-cyan-300 to-white rounded-md">
-                    <a href="{{ route('task.index') }}?status=pending" class="flex px-10 py-14 flex-col items-center">
-                        <h1 class="font-bold text-3xl">{{ count($pending_tasks) }}</h1>
-                        <h2 class="text-emerald-900 font-black uppercase">Pending Tasks</h2>
-                    </a>
-                </div>
-                <div class="bg-gradient-to-bl from-cyan-300 to-white rounded-md">
-                    <a href="{{ route('task.index') }}?status=complete" class="flex px-10 py-14 flex-col items-center">
-                        <h1 class="font-bold text-3xl">{{ count($user->tasks) - count($pending_tasks) }}</h1>
-                        <h2 class="text-emerald-900 font-black uppercase">Completed Tasks</h2>
-                    </a>
-                </div>
-                <div class="bg-gradient-to-br from-cyan-300 to-white rounded-md">
-                    <a href="{{ route('invoice.index') }}?status=unpaid" class="flex px-10 py-14 flex-col items-center">
-                        <h1 class="font-bold text-3xl">{{ count($unpaid_invoices) }}</h1>
-                        <h2 class="text-emerald-900 font-black uppercase">Due Invoice</h2>
-                    </a>
-                </div>
+
+                <x-card text="Clients" :route="route('client.index')" :count="count($user->clients)" class="bg-gradient-to-tr from-cyan-300 to-white rounded-md" />
+
+                <x-card text="Pending Tasks" route="{{ route('task.index') }}?status=pending" :count="count($pending_tasks)" class="bg-gradient-to-tl from-cyan-300 to-white rounded-md" />
+
+                <x-card text="Completed Tasks" route="{{ route('task.index') }}?status=complete" :count="count($user->tasks) - count($pending_tasks)" class="bg-gradient-to-bl from-cyan-300 to-white rounded-md" />
+
+                <x-card text="Due Invoice" route="{{ route('invoice.index') }}?status=unpaid" :count="count($unpaid_invoices) " class="bg-gradient-to-br from-cyan-300 to-white rounded-md" />
+
             </div>
         </div>
     </div>

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Client;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -11,21 +10,21 @@ use Illuminate\Support\Facades\Storage;
 class ClientController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of clients.
      *
-     * @return \Illuminate\Http\Response
+     * @return view with clients filter by user
      */
     public function index()
     {
-        $clients = Client::where('user_id',Auth::user()->id)->with('tasks')->latest()->paginate(10);
-        return view('client.index')->with('clients',$clients);
+        $clients = Client::where('user_id', Auth::user()->id)->with('tasks')->latest()->paginate(10);
+        return view('client.index')->with('clients', $clients);
     }
 
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new client.
      *
-     * @return \Illuminate\Http\Response
+     * @return view with countries
      */
     public function create()
     {
@@ -33,66 +32,72 @@ class ClientController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created client in database.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
+        // Data Validation
         $request->validate([
-            'name'  => ['required','max:255','string'],
-            'username'  => ['required','max:255','string'],
-            'email'  => ['required','max:255','string','email'],
-            'phone'  => ['max:255','string'],
-            'country'  => ['max:255','string','not_in:none'],
-            'status'  => ['not_in:none','string'],
+            'name'  => ['required', 'max:255', 'string'],
+            'username'  => ['required', 'max:255', 'string'],
+            'email'  => ['required', 'max:255', 'string', 'email'],
+            'phone'  => ['max:255', 'string'],
+            'country'  => ['max:255', 'string', 'not_in:none'],
+            'status'  => ['not_in:none', 'string'],
             'thumbnail'  => ['image'],
         ]);
 
-
-        $thumb = null;
-        if( !empty($request->file('thumbnail')) ){
-            $thumb = time() . '-' . $request->file('thumbnail')->getClientOriginalName();
-            $request->file('thumbnail')->storeAs('public/uploads', $thumb);
+        try {
+            $thumb = null;
+            if (!empty($request->file('thumbnail'))) {
+                $thumb = time() . '-' . $request->file('thumbnail')->getClientOriginalName();
+                $request->file('thumbnail')->storeAs('public/uploads', $thumb);
+            }
+            // Create new client
+            Client::create([
+                'name'       => $request->name,
+                'username'   => $request->username,
+                'email'      => $request->email,
+                'phone'      => $request->phone,
+                'country'    => $request->country,
+                'thumbnail'  => $thumb,
+                'user_id'    => Auth::user()->id,
+                'status'     => $request->status,
+            ]);
+            // Return Response
+            return redirect()->route('client.index')->with('success', 'Client Added Successfully!');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return redirect()->route('client.index')->with('error', $th->getMessage());
         }
-
-        Client::create([
-            'name'  => $request->name,
-            'username'  => $request->username,
-            'email'  => $request->email,
-            'phone'  => $request->phone,
-            'country'  => $request->country,
-            'thumbnail'  => $thumb,
-            'user_id'  => Auth::user()->id,
-            'status'  => $request->status,
-        ]);
-
-        return redirect()->route('client.index')->with('success','Client Added Successfully!');
-
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified client.
      *
-     * @param  \App\Models\Client  $client
+     * @param  \App\Models\Client $client
      * @return \Illuminate\Http\Response
      */
     public function show(Client $client)
     {
-        $client =$client->load('tasks','invoices');
+        // Client with tasks and invoices
+        $client = $client->load('tasks', 'invoices');
+        // Return View
         return view('client.profile')->with([
-            'client'=> $client,
-            'pending_tasks' => $client->tasks->where('status','pending'),
-            'paid_invoices' => $client->invoices->where('status','paid'),
+            'client' => $client,
+            'pending_tasks' => $client->tasks->where('status', 'pending'),
+            'paid_invoices' => $client->invoices->where('status', 'paid'),
         ]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified client.
      *
-     * @param  \App\Models\Client  $client
-     * @return \Illuminate\Http\Response
+     * @param  \App\Models\Client $client
+     * @return view with clients and countries
      */
     public function edit(Client $client)
     {
@@ -103,68 +108,85 @@ class ClientController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified client in database.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Client  $client
+     * @param  \Illuminate\Http\Request $request
+     * @param  \App\Models\Client $client
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Client $client)
     {
+        // Data Validation
         $request->validate([
-            'name'  => ['required','max:255','string'],
-            'username'  => ['required','max:255','string'],
-            'email'  => ['required','max:255','string','email'],
-            'phone'  => ['max:255','string'],
-            'country'  => ['max:255','string','not_in:none'],
+            'name'  => ['required', 'max:255', 'string'],
+            'username'  => ['required', 'max:255', 'string'],
+            'email'  => ['required', 'max:255', 'string', 'email'],
+            'phone'  => ['max:255', 'string'],
+            'country'  => ['max:255', 'string', 'not_in:none'],
             'thumbnail'  => ['image'],
         ]);
 
-        $thumb = $client->thumbnail;
+        try {
+            // Default thumbnail from database
+            $thumb = $client->thumbnail;
 
-        if( !empty($request->file('thumbnail')) ){
+            // Upload new thumbnail
+            if (!empty($request->file('thumbnail'))) {
+                Storage::delete('public/uploads/' . $thumb);
+                $filename = strtolower(str_replace(' ', '-', $request->file('thumbnail')->getClientOriginalName()));
+                $thumb    = time() . '-' . $filename;
+                $request->file('thumbnail')->storeAs('public/uploads', $thumb);
+            }
 
-            Storage::delete('public/uploads/'.$thumb);
-
-            $thumb = time() . '-' . $request->file('thumbnail')->getClientOriginalName();
-
-            $request->file('thumbnail')->storeAs('public/uploads', $thumb);
+            // Update client data
+            Client::find($client->id)->update([
+                'name'       => $request->name,
+                'username'   => $request->username,
+                'email'      => $request->email,
+                'phone'      => $request->phone,
+                'country'    => $request->country,
+                'thumbnail'  => $thumb,
+                'user_id'    => Auth::user()->id,
+                'status'     => $request->status,
+            ]);
+            // Return Response
+            return redirect()->route('client.index')->with('success', 'Client Updated');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return redirect()->route('client.index')->with('error', $th->getMessage());
         }
-
-
-        Client::find($client->id)->update([
-            'name'  => $request->name,
-            'username'  => $request->username,
-            'email'  => $request->email,
-            'phone'  => $request->phone,
-            'country'  => $request->country,
-            'thumbnail'  => $thumb,
-            'user_id'  => Auth::user()->id,
-            'status'  => $request->status,
-        ]);
-
-        return redirect()->route('client.index')->with('success','Client Updated');
-
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified client from database.
      *
      * @param  \App\Models\Client  $client
      * @return \Illuminate\Http\Response
      */
     public function destroy(Client $client)
     {
-        Storage::delete('public/uploads/'.$client->thumbnail);
+        // find all pending tasks of the client
+        $pending_tasks = $client->tasks->where('status', 'pending');
 
-        $client->delete();
-        return redirect()->route('client.index')->with('success','Client Deleted!');
+        try {
+            // Soft delete or delete depending on the condition
+            if (count($pending_tasks) == 0) {
+                Storage::delete('public/uploads/' . $client->thumbnail);
+                $client->delete();
+            } else {
+                $client->update([
+                    'status'    => 'inactive'
+                ]);
+            }
+            // Return Response
+            return redirect()->route('client.index')->with('success', 'Client soft Deleted!');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return redirect()->route('client.index')->with('error', $th->getMessage());
+        }
     }
 
-
-
-
-
+    // Country List
     public $countries_list = array(
         "Afghanistan",
         "Aland Islands",
@@ -419,7 +441,4 @@ class ClientController extends Controller
         "Zambia",
         "Zimbabwe"
     );
-
-
-
 }

@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="header" >
+    <x-slot name="header">
 
     </x-slot>
 
@@ -29,32 +29,23 @@
                     </div>
                 </div>
 
-                <h2 class="text-black font-bold text-2xl">Summery</h2>
+                <h2 class="text-white font-bold text-2xl">Summery</h2>
                 <div class="grid grid-cols-4 gap-5 mt-6">
-                    <div class="bg-gradient-to-tr from-teal-200 to-yellow-500 rounded-md">
-                        <a href="{{ route('task.index') }}?client_id={{ $client->id }}" class="flex px-10 py-14 flex-col items-center">
-                            <h1 class="font-bold text-3xl">{{ count($client->tasks) }}</h1>
-                            <h2 class="text-emerald-900 font-black uppercase">Total Tasks</h2>
-                        </a>
-                    </div>
-                    <div class="bg-gradient-to-tl from-teal-200 to-yellow-500 rounded-md">
-                        <a href="{{ route('task.index') }}?client_id={{ $client->id }}&status=pending" class="flex px-10 py-14 flex-col items-center">
-                            <h1 class="font-bold text-3xl">{{ count($pending_tasks) }}</h1>
-                            <h2 class="text-emerald-900 font-black uppercase">Pending Tasks</h2>
-                        </a>
-                    </div>
-                    <div class="bg-gradient-to-bl from-orange-400 to-emerald-300 rounded-md">
-                        <a href="{{ route('invoice.index') }}?client_id={{ $client->id }}" class="flex px-10 py-14 flex-col items-center">
-                            <h1 class="font-bold text-3xl">{{ count($client->invoices) }}</h1>
-                            <h2 class="text-emerald-900 font-black uppercase">Total Invoice</h2>
-                        </a>
-                    </div>
-                    <div class="bg-gradient-to-br from-orange-400 to-emerald-300 rounded-md">
-                        <a href="{{ route('invoice.index') }}?client_id={{ $client->id }}&status=paid" class="flex px-10 py-14 flex-col items-center">
-                            <h1 class="font-bold text-3xl">{{ count($paid_invoices) }}</h1>
-                            <h2 class="text-emerald-900 font-black uppercase">Paid Invoice</h2>
-                        </a>
-                    </div>
+
+
+                    <x-card text="Total Tasks" route="{{ route('task.index') }}?client_id={{ $client->id }}" :count="count($client->tasks)"
+                        class="bg-gradient-to-tr from-cyan-300 to-white rounded-md" />
+
+                    <x-card text="Pending Tasks" route="{{ route('task.index') }}?client_id={{ $client->id }}&status=pending"
+                        :count="count($pending_tasks)" class="bg-gradient-to-tl from-cyan-300 to-white rounded-md" />
+
+                    <x-card text="Total Invoice" route="{{ route('invoice.index') }}?client_id={{ $client->id }}"
+                        :count="count($client->invoices)"
+                        class="bg-gradient-to-bl from-cyan-300 to-white rounded-md" />
+
+                    <x-card text="Paid Invoice" route="{{ route('invoice.index') }}?client_id={{ $client->id }}&status=paid"
+                        :count="count($paid_invoices)" class="bg-gradient-to-br from-cyan-300 to-white rounded-md" />
+
                 </div>
             </div>
         </div>

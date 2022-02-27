@@ -1,35 +1,32 @@
 <?php
 
-use App\Http\Controllers\api\NewController;
-use App\Http\Controllers\api\testController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\TaskController;
-use App\Mail\InvoiceEmail;
-use App\Models\Client;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+// Welcome view
 Route::get('/', function () {
     return view('welcome');
 });
 
 
-// Backend
+// Backend routes
 Route::prefix('/')->middleware(['auth'])->group(function () {
 
     // Dashboard
     Route::get('dashboard', function () {
-
+        // Get current user
         $user = User::find(Auth::user()->id);
-
+        // return response
         return view('dashboard')->with([
             'user'              => $user,
-            'pending_tasks'     => $user->tasks->where('status','pending'),
-            'unpaid_invoices'   => $user->invoices->where('status','unpaid'),
-            'paid_invoices'   => $user->invoices->where('status','paid'),
+            'pending_tasks'     => $user->tasks->where('status', 'pending'),
+            'unpaid_invoices'   => $user->invoices->where('status', 'unpaid'),
+            'paid_invoices'   => $user->invoices->where('status', 'paid'),
         ]);
     })->name('dashboard');
 
@@ -38,7 +35,7 @@ Route::prefix('/')->middleware(['auth'])->group(function () {
 
     // Task Route
     Route::resource('task', TaskController::class);
-    Route::put('task/{task}/complete', [TaskController::class, 'markAsCcomplete'])->name('markAsCcomplete');
+    Route::put('task/{task}/complete', [TaskController::class, 'markAsComplete'])->name('markAsComplete');
 
     // Invoices Route
     Route::prefix('invoices')->group(function () {
@@ -53,7 +50,6 @@ Route::prefix('/')->middleware(['auth'])->group(function () {
     // Settings
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::post('settings/update', [SettingsController::class, 'update'])->name('settings.update');
-
 });
 
 // Auth Routes

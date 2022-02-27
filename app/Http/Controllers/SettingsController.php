@@ -9,7 +9,11 @@ use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
 {
-
+    /**
+     * Display a listing of settings.
+     *
+     * @return view with countries
+     */
     public function index()
     {
         return view('settings')->with([
@@ -17,54 +21,63 @@ class SettingsController extends Controller
         ]);
     }
 
+    /**
+     * Update the specified settings.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
     public function update(Request $request)
     {
+        // validation
         $request->validate([
-            'name'      => ['required', 'max:255', 'string'],
-            'email'     => ['required', 'max:255', 'string'],
-            'company'   => ['max:255', 'string'],
-            'phone'     => ['max:255', 'string'],
-            'country'     => ['max:255', 'string'],
+            'name'        => ['required', 'max:255', 'string'],
+            'email'       => ['required', 'max:255', 'string'],
+            'company'     => ['max:255',  'string'],
+            'phone'       => ['max:255',  'string'],
+            'country'     => ['max:255',  'string']
         ]);
 
-        $user = User::find(Auth::id());
+        try {
+            // get current user
+            $user = User::find(Auth::id());
 
-        $thumb = $user->thumbnail;
+            // get default thumbnail
+            $thumb = $user->thumbnail;
 
-        if( !empty($request->file('thumbnail')) ){
+            // upload new thumbnail
+            if (!empty($request->file('thumbnail'))) {
+                Storage::delete('public/uploads/' . $thumb);
+                $filename = strtolower(str_replace(' ', '-', $request->file('thumbnail')->getClientOriginalName()));
+                $thumb    = time() .  '-'  . $filename;
+                $request->file('thumbnail')->storeAs('public/uploads', $thumb);
+            }
 
-            Storage::delete('public/uploads/'.$thumb);
+            // upload new invoice logo
+            if (!empty($request->file('invoice_logo'))) {
+                $invoice = 'invoice.png';
+                $request->file('invoice_logo')->storeAs('public/uploads', $invoice);
+            }
 
-            $thumb = time() . '-' . $request->file('thumbnail')->getClientOriginalName();
+            // update user data
+            $user->update([
+                'name'        => $request->name,
+                'email'       => $request->email,
+                'company'     => $request->company,
+                'phone'       => $request->phone,
+                'country'     => $request->country,
+                'thumbnail'   => $thumb,
+            ]);
 
-            $request->file('thumbnail')->storeAs('public/uploads', $thumb);
+            // return response
+            return redirect()->route('settings.index')->with('success', 'User Updated!');
+        } catch (\Throwable $th) {
+            //throw $th;
+            return redirect()->route('settings.index')->with('error', $th->getMessage());
         }
-
-        if( !empty($request->file('invoice_logo')) ){
-
-            $invoice = 'invoice.png';
-
-            $request->file('invoice_logo')->storeAs('public/uploads', $invoice);
-        }
-
-        $user->update([
-            'name'      => $request->name,
-            'email'     => $request->email,
-            'company'   => $request->company,
-            'phone'     => $request->phone,
-            'country'   => $request->country,
-            'thumbnail'   => $thumb,
-        ]);
-
-
-
-
-
-        return redirect()->route('settings.index')->with('success','User Updated!');
     }
 
-
-// Country List
+    // Country List
     public $countries_list = array(
         "Afghanistan",
         "Aland Islands",
@@ -307,6 +320,4 @@ class SettingsController extends Controller
         "Zambia",
         "Zimbabwe"
     );
-
-
 }

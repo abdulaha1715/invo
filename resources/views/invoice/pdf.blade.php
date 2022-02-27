@@ -192,9 +192,18 @@
             <div class="header_logo">
 
                 @if ( request('preview') == 'yes' )
-                    <img src="{{ asset('storage/uploads/invoice.png') }}"  width="100" class="w-40" style="margin-left:auto">
+                @if (file_exists('storage/uploads/invoice.png'))
+                <img src="{{ asset('storage/uploads/invoice.png') }}" width="100" class="w-40" style="margin-left:auto">
                 @else
+                <img src="{{ asset('img/invo-mate.png') }}" width="100" class="w-40" style="margin-left:auto">
+                @endif
+
+                @else
+                    @if (file_exists('storage/uploads/invoice.png'))
                     <img src="storage/uploads/invoice.png" class="w-40" width="100" style="margin-left:auto">
+                     @else
+                    <img src="img/invo-mate.png" class="w-40" width="100" style="margin-left:auto">
+                    @endif
                 @endif
 
 
@@ -247,12 +256,12 @@
                 </div>
 
                 @php
-                    $maindiscount = $discount;
-                    if($discount_type == '%'){
-                        $discount = ( $discount * $tasks->sum('price') ) / 100;
-                    }else{
-                        $discount = $discount;
-                    }
+                $maindiscount = $discount;
+                if($discount_type == '%'){
+                $discount = ( $discount * $tasks->sum('price') ) / 100;
+                }else{
+                $discount = $discount;
+                }
                 @endphp
 
                 <div class="single_footer">
@@ -267,7 +276,8 @@
                 </div>
             </div>
             <div class="amount_total">
-                <h2><span>Amount Due:</span> <strong>${{ number_format($tasks->sum('price'), 0) }}</strong></h2>
+                <h2><span>Amount Due:</span> <strong>${{ number_format($tasks->sum('price') - $discount, 0) }}</strong>
+                </h2>
             </div>
         </div>
         <div class="copyright">

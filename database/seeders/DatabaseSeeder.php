@@ -39,9 +39,9 @@ class DatabaseSeeder extends Seeder
 
         Client::factory(5)->create();
 
-        Task::factory(150)->create();
+        Task::factory(30)->create();
 
-        Invoice::factory(20)->create();
+        // Invoice::factory(10)->create();
 
     }
 }
